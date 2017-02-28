@@ -1,0 +1,24 @@
+language: cpp
+
+compiler:
+  - clang
+notifications:
+  email: false
+env:
+  matrix: 
+    # - JULIAVERSION="juliareleases" Require Julia 0.3 or greater.
+    - JULIAVERSION="julianightlies" 
+before_install:
+  # Install Julia
+  - sudo add-apt-repository ppa:staticfloat/julia-deps -y
+  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
+  - sudo apt-get update -qq -y
+  - sudo apt-get install libpcre3-dev julia -y
+  # Install Python scikit-learn
+  - sudo apt-get build-dep python-sklearn -y
+  - sudo pip install -U scikit-learn
+script:
+  - julia -e 'Pkg.init(); Pkg.clone(pwd())'
+  - julia --code-coverage test/runtests.jl
+after_success:
+  - julia -e 'cd(Pkg.dir("Combine")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
