@@ -6,6 +6,8 @@ The Combine.jl package is licensed under the MIT "Expat" License:
 
 # Combine
 
+[![Join the chat at https://gitter.im/Combine-jl/Lobby](https://badges.gitter.im/Combine-jl/Lobby.svg)](https://gitter.im/Combine-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/svs14/Combine.jl.svg?branch=master)](https://travis-ci.org/svs14/Combine.jl)
 [![Coverage Status](https://coveralls.io/repos/svs14/Combine.jl/badge.png?branch=master)](https://coveralls.io/r/svs14/Combine.jl?branch=master)
 
