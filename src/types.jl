@@ -9,14 +9,14 @@ export Transformer,
 
 # All transformer types must have implementations 
 # of function `fit!` and `transform!`.
-abstract Transformer
+abstract type Transformer end
 
 # Learner abstract type which all machine learners implement.
-abstract Learner <: Transformer
+abstract type Learner <: Transformer end
 
 # Test learner. 
 # Used to separate production learners from test.
-abstract TestLearner <: Learner
+abstract type TestLearner <: Learner end
 
 # Trains transformer on provided instances and labels.
 #

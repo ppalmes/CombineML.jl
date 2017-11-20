@@ -12,7 +12,7 @@ export StandardScaler,
 
 # Standardizes each feature using (X - mean) / stddev.
 # Will produce NaN if standard deviation is zero.
-type StandardScaler <: Transformer
+mutable struct StandardScaler <: Transformer
   model
   options
 

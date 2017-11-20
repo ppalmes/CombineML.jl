@@ -10,6 +10,7 @@ using PyCall
 @pyimport rpy2.robjects.numpy2ri as N2R
 N2R.activate()
 RP.importr("caret")
+RP.importr("e1071")
 
 export CRTLearner,
        fit!,
@@ -58,7 +59,7 @@ end
 # 
 # Options for the specific CARET learner is to be passed
 # in `options[:impl_options]` dictionary.
-type CRTLearner <: Learner
+mutable struct CRTLearner <: Learner
   model
   options
   

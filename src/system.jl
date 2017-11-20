@@ -28,7 +28,7 @@ end
 
 # Check system for python dependencies.
 LIB_SKL_AVAILABLE = check_py_dep("sklearn")
-#LIB_CRT_AVAILABLE = check_r_dep("caret")
-LIB_CRT_AVAILABLE = false
+LIB_CRT_AVAILABLE = check_r_dep("caret")
+#LIB_CRT_AVAILABLE = false
 
 end # module

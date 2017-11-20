@@ -7,8 +7,8 @@ importall Combine.Util
 using PyCall
 @pyimport sklearn.ensemble as ENS
 @pyimport sklearn.linear_model as LM
-@pyimport sklearn.lda as LDA_M
-@pyimport sklearn.qda as QDA_M
+#@pyimport sklearn.lda as LDA_M
+#@pyimport sklearn.qda as QDA_M
 @pyimport sklearn.neighbors as NN
 @pyimport sklearn.svm as SVM
 @pyimport sklearn.tree as TREE
@@ -24,7 +24,7 @@ learner_dict = Dict(
   "ExtraTreesClassifier" => ENS.ExtraTreesClassifier,
   "GradientBoostingClassifier" => ENS.GradientBoostingClassifier,
   "RandomForestClassifier" => ENS.RandomForestClassifier,
-  "LDA" => LDA_M.LDA,
+  #"LDA" => LDA_M.LDA,
   "LogisticRegression" => LM.LogisticRegression,
   "PassiveAggressiveClassifier" => LM.PassiveAggressiveClassifier,
   "RidgeClassifier" => LM.RidgeClassifier,
@@ -33,7 +33,7 @@ learner_dict = Dict(
   "KNeighborsClassifier" => NN.KNeighborsClassifier,
   "RadiusNeighborsClassifier" => NN.RadiusNeighborsClassifier,
   "NearestCentroid" => NN.NearestCentroid,
-  "QDA" => QDA_M.QDA,
+  #"QDA" => QDA_M.QDA,
   "SVC" => SVM.SVC,
   "LinearSVC" => SVM.LinearSVC,
   "NuSVC" => SVM.NuSVC,
@@ -67,7 +67,7 @@ learner_dict = Dict(
 #   - "NuSVC"
 #   - "DecisionTreeClassifier"
 #
-type SKLLearner <: Learner
+mutable struct SKLLearner <: Learner
   model
   options
   

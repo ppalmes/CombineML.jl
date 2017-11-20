@@ -11,7 +11,7 @@ export Baseline,
        transform!
 
 # Baseline learner that by default assigns the most frequent label.
-type Baseline <: Learner
+mutable struct Baseline <: Learner
   model
   options
 
@@ -38,7 +38,7 @@ end
 
 
 # Identity transformer passes the instances as is.
-type Identity <: Transformer
+mutable struct Identity <: Transformer
   model
   options
 

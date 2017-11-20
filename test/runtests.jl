@@ -1,4 +1,4 @@
-# Run all tests.
+#Run all tests.
 module TestRunner
   using FactCheck
   using Combine.System

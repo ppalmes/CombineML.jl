@@ -20,7 +20,7 @@ export VoteEnsemble,
        transform!
 
 # Set of machine learners that majority vote to decide prediction.
-type VoteEnsemble <: Learner
+mutable struct VoteEnsemble <: Learner
   model
   options
   
@@ -54,7 +54,7 @@ function transform!(ve::VoteEnsemble, instances::Matrix)
 end
 
 # Ensemble where a 'stack' learner learns on a set of learners' predictions.
-type StackEnsemble <: Learner
+mutable struct StackEnsemble <: Learner
   model
   options
   
@@ -164,7 +164,7 @@ end
 
 # Selects best learner out of set. 
 # Will perform a grid search on learners if options grid is provided.
-type BestLearner <: Learner
+mutable struct BestLearner <: Learner
   model
   options
   
@@ -238,7 +238,7 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
   num_learners = size(learners, 1)
   num_instances = size(instances, 1)
   score_type = bls.options[:score_type]
-  learner_partition_scores = Array(score_type, num_learners, num_partitions)
+  learner_partition_scores = Array{score_type}(num_learners, num_partitions)
   for l_index = 1:num_learners, p_index = 1:num_partitions
     partition = partitions[p_index]
     rest = setdiff(1:num_instances, partition)

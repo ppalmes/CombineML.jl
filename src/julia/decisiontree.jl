@@ -14,7 +14,7 @@ export PrunedTree,
        transform!
 
 # Pruned ID3 decision tree.
-type PrunedTree <: Learner
+mutable struct PrunedTree <: Learner
   model
   options
   
@@ -43,7 +43,7 @@ function transform!(tree::PrunedTree, instances::Matrix)
 end
 
 # Random forest (C4.5).
-type RandomForest <: Learner
+mutable struct RandomForest <: Learner
   model
   options
   
@@ -89,7 +89,7 @@ function transform!(forest::RandomForest, instances::Matrix)
 end
 
 # Adaboosted C4.5 decision stumps.
-type DecisionStumpAdaboost <: Learner
+mutable struct DecisionStumpAdaboost <: Learner
   model
   options
   

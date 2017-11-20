@@ -13,7 +13,7 @@ export OneHotEncoder,
 
 # Transforms instances with nominal features into one-hot form 
 # and coerces the instance matrix to be of element type Float64.
-type OneHotEncoder <: Transformer
+mutable struct OneHotEncoder <: Transformer
   model
   options
 
@@ -108,7 +108,7 @@ end
 
 
 # Imputes NaN values from Float64 features.
-type Imputer <: Transformer
+mutable struct Imputer <: Transformer
   model
   options
 
@@ -148,7 +148,7 @@ end
 
 
 # Chains multiple transformers in sequence.
-type Pipeline <: Transformer
+mutable struct Pipeline <: Transformer
   model
   options
 
@@ -196,7 +196,7 @@ end
 
 
 # Wraps around an Combine transformer.
-type Wrapper <: Transformer
+mutable struct Wrapper <: Transformer
   model
   options
 
