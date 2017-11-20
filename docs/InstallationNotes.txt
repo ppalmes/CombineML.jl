@@ -1,8 +1,8 @@
 env ARCHFLAGS="-arch i386 -arch x86_64" pip install rpy2
 
 1. edit .juliarc.jl
-    1. ENV["PYTHON"]="/Users/ppalmes/anaconda2/bin/python"
-    2. ENV["R_HOME"]="/Users/ppalmes/anaconda2/lib/R"
+    1. ENV["PYTHON"]="/pathto/anaconda2/bin/python"
+    2. ENV["R_HOME"]="/pathto/anaconda2/lib/R"
 2. conda install -c r rpy2
 3. conda install scikit-learn
 4. using Combine
