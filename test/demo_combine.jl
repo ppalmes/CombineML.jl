@@ -6,9 +6,9 @@
 
 addprocs()
 
-import Combine.Util
-import Combine.Transformers
-import RDatasets
+@everywhere import Combine.Util
+@everywhere import Combine.Transformers
+@everywhere import RDatasets
 
 @everywhere CU=Combine.Util
 @everywhere CT=Combine.Transformers
