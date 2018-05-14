@@ -43,7 +43,7 @@ facts("Combine system") do
 
   context("All learners train and predict on iris dataset.") do
     # Get data
-    dataset = readcsv(joinpath(pwd(), "iris.csv"))
+    dataset = readcsv(joinpath(Pkg.dir("Combine"),"test", "iris.csv"))
     features = dataset[:,1:(end-1)]
     labels = dataset[:, end]
     (train_ind, test_ind) = holdout(size(features, 1), 0.3)

@@ -137,7 +137,7 @@ function transform!(imp::Imputer, instances::Matrix)
     if issubtype(col_eltype, Real)
       na_rows = map(x -> isnan(x), column_values)
       if any(na_rows)
-        fill_value = strategy(column_values[!na_rows])
+        fill_value = strategy(column_values[.!na_rows])
         new_instances[na_rows, column] = fill_value
       end
     end
