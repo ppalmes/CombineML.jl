@@ -38,28 +38,28 @@ facts("Combine system") do
       fit_and_transform!(learner, nfcp)
     end
 
-    @fact 1 => 1
+    @fact 1 --> 1
   end
 
   context("All learners train and predict on iris dataset.") do
     # Get data
-    dataset = readcsv(joinpath(dirname(@__FILE__), "iris.csv"))
-    instances = dataset[:,1:(end-1)]
+    dataset = readcsv(joinpath(pwd(), "iris.csv"))
+    features = dataset[:,1:(end-1)]
     labels = dataset[:, end]
-    (train_ind, test_ind) = holdout(size(instances, 1), 0.3)
-    train_instances = instances[train_ind, :]
-    test_instances = instances[test_ind, :]
+    (train_ind, test_ind) = holdout(size(features, 1), 0.3)
+    train_features = features[train_ind, :]
+    test_features = features[test_ind, :]
     train_labels = labels[train_ind]
     test_labels = labels[test_ind]
 
     # Test all learners
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
-      fit!(learner, train_instances, train_labels)
-      transform!(learner, test_instances)
+      fit!(learner, train_features, train_labels)
+      transform!(learner, test_features)
     end
 
-    @fact 1 => 1
+    @fact 1--> 1
   end
 
   context("Ensemble with learners from different libraries work.") do 
@@ -72,10 +72,10 @@ facts("Combine system") do
     if LIB_CRT_AVAILABLE
       push!(learners, CRTLearner())
     end
-    ensemble = VoteEnsemble({:learners => learners})
+    ensemble = VoteEnsemble(Dict(:learners => learners))
     predictions = fit_and_transform!(ensemble, nfcp)
 
-    @fact 1 => 1
+    @fact 1 --> 1
   end
 
   context("Pipeline works with fixture data.") do
@@ -85,7 +85,7 @@ facts("Combine system") do
       StandardScaler(),
       BestLearner()
     ]
-    pipeline = Pipeline({:transformers => transformers})
+    pipeline = Pipeline(Dict(:transformers => transformers))
     predictions = fit_and_transform!(pipeline, fcp)
 
     @fact 1 --> 1
