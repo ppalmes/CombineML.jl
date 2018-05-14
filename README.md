@@ -8,8 +8,8 @@ The Combine.jl package is licensed under the MIT "Expat" License:
 
 [![Join the chat at https://gitter.im/Combine-jl/Lobby](https://badges.gitter.im/Combine-jl/Lobby.svg)](https://gitter.im/Combine-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/svs14/Combine.jl.svg?branch=master)](https://travis-ci.org/svs14/Combine.jl)
-[![Coverage Status](https://coveralls.io/repos/svs14/Combine.jl/badge.png?branch=master)](https://coveralls.io/r/svs14/Combine.jl?branch=master)
+[![Build Status](https://travis-ci.org/ppalmes/Combine.jl.svg?branch=master)](https://travis-ci.org/ppalmes/Combine.jl)
+[![Coverage Status](https://coveralls.io/repos/github/ppalmes/Combine.jl/badge.svg?branch=master)](https://coveralls.io/github/ppalmes/Combine.jl?branch=master)
 
 Combine is a heterogeneous ensemble learning package for the Julia programming
 language. It is driven by a uniform machine learner API designed for learner
