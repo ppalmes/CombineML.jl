@@ -21,7 +21,7 @@ We will cover how to predict on a dataset using Combine.
 
 ### Obtain Data
 
-A tabular dataset will be used to obtain our instances and labels. 
+A tabular dataset will be used to obtain our features and labels. 
 
 This will be split it into a training and test set using holdout method.
 
@@ -30,18 +30,18 @@ import RDatasets
 using Combine.Util
 using Combine.Transformers
 
-# Obtain instances and labels
+# Obtain features and labels
 dataset = RDatasets.dataset("datasets", "iris")
-instances = array(dataset[:, 1:(end-1)])
-labels = array(dataset[:, end])
+features = Array(dataset[:, 1:(end-1)])
+labels = Array(dataset[:, end])
 
 # Split into training and test sets
-(train_ind, test_ind) = holdout(size(instances, 1), 0.3)
+(train_ind, test_ind) = holdout(size(features, 1), 0.3)
 ```
 
 ### Create a Learner
 
-A transformer processes instances in some form. Coincidentally, a learner is a subtype of transformer.
+A transformer processes features in some form. Coincidentally, a learner is a subtype of transformer.
 
 A transformer can be created by instantiating it, taking an options dictionary as an optional argument. 
 
@@ -52,26 +52,26 @@ All transformers, including learners are called in the same way.
 learner = PrunedTree()
 
 # Learner with some of the default settings overriden
-learner = PrunedTree({
-  :impl_options => {
+learner = PrunedTree(Dict(
+  :impl_options => Dict(
     :purity_threshold => 0.5
-  }
-})
+  )
+))
 
 # All learners are called in the same way.
-learner = StackEnsemble({
+learner = StackEnsemble(Dict(
   :learners => [
     PrunedTree(), 
     RandomForest(),
     DecisionStumpAdaboost()
   ], 
   :stacker => RandomForest()
-})
+))
 ```
 
 ### Create a Pipeline
 
-Normally we may require the use of data pre-processing before the instances are passed to the learner.
+Normally we may require the use of data pre-processing before the features are passed to the learner.
 
 We shall use a pipeline transformer to chain many transformers in sequence.
 
@@ -79,14 +79,14 @@ In this case we shall one hot encode categorical features, impute NA values and 
 
 ```julia
 # Create pipeline
-pipeline = Pipeline({
+pipeline = Pipeline(Dict(
   :transformers => [
     OneHotEncoder(), # Encodes nominal features into numeric
     Imputer(), # Imputes NA values
     #StandardScaler(), # Standardizes features 
-    learner # Predicts labels on instances
+    learner # Predicts labels on features
   ]
-})
+))
 ```
 
 ### Train and Predict
@@ -97,10 +97,10 @@ All transformers, provide these two functions. They are always called the same w
 
 ```julia
 # Train
-fit!(pipeline, instances[train_ind, :], labels[train_ind])
+fit!(pipeline, features[train_ind, :], labels[train_ind])
 
 # Predict
-predictions = transform!(pipeline, instances[test_ind, :])
+predictions = transform!(pipeline, features[test_ind, :])
 ```
 
 ### Assess
@@ -122,19 +122,19 @@ Outlined are all the transformers currently available via Combine.
 
 Baseline learner that by default assigns the most frequent label.
 ```julia
-learner = Baseline({
+learner = Baseline(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Label assignment strategy.
   # Function that takes a label vector and returns the required output.
-  :strategy => mode
-})
+  :strategy => StatsBase.mode
+))
 ```
 
 #### Identity (Combine.jl Transformer)
 
-Identity transformer passes the instances as is.
+Identity transformer passes the features as is.
 ```julia
 transformer = Identity()
 ```
@@ -143,20 +143,20 @@ transformer = Identity()
 
 Set of machine learners that majority vote to decide prediction.
 ```julia
-learner = VoteEnsemble({
+learner = VoteEnsemble(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Learners in voting committee.
   :learners => [PrunedTree(), DecisionStumpAdaboost(), RandomForest()]
-})
+))
 ```
 
 #### StackEnsemble (Combine.jl Learner)
 
 Ensemble where a 'stack' learner learns on a set of learners' predictions.
 ```julia
-learner = StackEnsemble({
+learner = StackEnsemble(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -168,7 +168,7 @@ learner = StackEnsemble({
   :stacker_training_proportion => 0.3,
   # Provide original features on top of learner outputs to stacker.
   :keep_original_features => false
-})
+))
 ```
 
 #### BestLearner (Combine.jl Learner)
@@ -176,12 +176,12 @@ learner = StackEnsemble({
 Selects best learner out of set. 
 Will perform a grid search on learners if options grid is provided.
 ```julia
-learner = BestLearner({
+learner = BestLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Function to return partitions of instance indices.
-  :partition_generator => (instances, labels) -> kfold(size(instances, 1), 5),
+  :partition_generator => (features, labels) -> kfold(size(features, 1), 5),
   # Function that selects the best learner by index.
   # Arg learner_partition_scores is a (learner, partition) score matrix.
   :selection_function => (learner_partition_scores) -> findmax(mean(learner_partition_scores, 2))[2],      
@@ -194,56 +194,56 @@ learner = BestLearner({
   # where learner_options is same as a learner's options but
   # with a list of values instead of scalar.
   :learner_options_grid => nothing
-})
+))
 ```
 
 #### OneHotEncoder (Combine.jl Transformer)
 
-Transforms instances with nominal features into one-hot form 
+Transforms nominal features into one-hot form 
 and coerces the instance matrix to be of element type Float64.
 ```julia
-transformer = OneHotEncoder({
+transformer = OneHotEncoder(Dict(
   # Nominal columns
   :nominal_columns => nothing,
   # Nominal column values map. Key is column index, value is list of
   # possible values for that column.
   :nominal_column_values_map => nothing
-})
+))
 ```
 
 #### Imputer (Combine.jl Transformer)
 
 Imputes NaN values from Float64 features.
 ```julia
-transformer = Imputer({
+transformer = Imputer(Dict(
   # Imputation strategy.
   # Statistic that takes a vector such as mean or median.
   :strategy => mean
-})
+))
 ```
 
 #### Pipeline (Combine.jl Transformer)
 
 Chains multiple transformers in sequence.
 ```julia
-transformer = Pipeline({
+transformer = Pipeline(Dict(
   # Transformers as list to chain in sequence.
   :transformers => [OneHotEncoder(), Imputer()],
   # Transformer options as list applied to same index transformer.
   :transformer_options => nothing
-})
+))
 ```
 
 #### Wrapper (Combine.jl Transformer)
 
 Wraps around an Combine transformer.
 ```julia
-transformer = Wrapper({
+transformer = Wrapper(Dict(
   # Transformer to call.
   :transformer => OneHotEncoder(),
   # Transformer options.
   :transformer_options => nothing
-})
+))
 ```
 
 
@@ -253,52 +253,52 @@ transformer = Wrapper({
 
 Pruned ID3 decision tree.
 ```julia
-learner = PrunedTree({
+learner = PrunedTree(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Options specific to this implementation.
-  :impl_options => {
+  :impl_options => Dict(
     # Merge leaves having >= purity_threshold combined purity.
     :purity_threshold => 1.0
-  }
-})
+  ) 
+))
 ```
 
 #### RandomForest (DecisionTree.jl Learner)
 
 Random forest (C4.5).
 ```julia
-learner = RandomForest({
+learner = RandomForest(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Options specific to this implementation.
-  :impl_options => {
+  :impl_options => Dict(
     # Number of features to train on with trees.
-    :num_subfeatures => nothing,
+    :num_subinstances => nothing,
     # Number of trees in forest.
     :num_trees => 10,
     # Proportion of trainingset to be used for trees.
     :partial_sampling => 0.7
-  }
-})
+  )
+))
 ```
 
 #### DecisionStumpAdaboost (DecisionTree.jl Learner)
 
 Adaboosted C4.5 decision stumps.
 ```julia
-learner = DecisionStumpAdaboost({
+learner = DecisionStumpAdaboost(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Options specific to this implementation.
-  :impl_options => {
+  :impl_options => Dict(
     # Number of boosting iterations.
     :num_iterations => 7
-  }
-})
+  )
+))
 ```
 
 #### PCA (DimensionalityReduction.jl Transformer)
@@ -309,12 +309,12 @@ Features ordered by maximal variance descending.
 
 Fails if zero-variance feature exists.
 ```julia
-transformer = PCA({
+transformer = PCA(Dict(
   # Center features
   :center => true,
   # Scale features
   :scale => true
-})
+))
 ```
 
 #### StandardScaler (MLBase.jl Transformer)
@@ -322,12 +322,12 @@ transformer = PCA({
 Standardizes each feature using (X - mean) / stddev.
 Will produce NaN if standard deviation is zero.
 ```julia
-transformer = StandardScaler({
+transformer = StandardScaler(Dict(
   # Center features
   :center => true,
   # Scale features
   :scale => true
-})
+))
 ```
 
 ### Python
@@ -364,14 +364,14 @@ Available learners:
   - "DecisionTreeClassifier"
 
 ```julia
-learner = SKLLearner({
+learner = SKLLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   :learner => "LinearSVC",
   # Options specific to this implementation.
   :impl_options => Dict()
-})
+))
 ```
 
 
@@ -389,19 +389,19 @@ CARET wrapper that provides access to all learners.
 Options for the specific CARET learner is to be passed
 in `options[:impl_options]` dictionary.
 ```julia
-learner = CRTLearner({
+learner = CRTLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   :learner => "svmLinear",
   :impl_options => Dict()
-})
+))
 ```
 
 
 ## Known Limitations
 
-Learners have only been tested on instances with numeric features. 
+Learners have only been tested on numeric features. 
 
 Inconsistencies may result in using nominal features directly without a numeric transformation (i.e. OneHotEncoder).
 
