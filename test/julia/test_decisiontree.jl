@@ -23,7 +23,7 @@ facts("DecisionTree learners") do
     original_predictions = apply_tree(model, nfcp.test_instances)
 
     # Verify same predictions
-    @fact combine_predictions => original_predictions
+    @fact combine_predictions --> original_predictions
   end
 
   context("RandomForest gives same results as its backend") do
@@ -43,7 +43,7 @@ facts("DecisionTree learners") do
     original_predictions = apply_forest(model, nfcp.test_instances)
 
     # Verify same predictions
-    @fact combine_predictions => original_predictions
+    @fact combine_predictions --> original_predictions
   end
 
   context("DecisionStumpAdaboost gives same results as its backend") do
@@ -63,16 +63,16 @@ facts("DecisionTree learners") do
     )
 
     # Verify same predictions
-    @fact combine_predictions => original_predictions
+    @fact combine_predictions --> original_predictions
   end
 
   context("RandomForest handles training-dependent options") do
     # Predict with Combine learner
-    learner = RandomForest({:impl_options => {:num_subfeatures => 2}})
+    learner = RandomForest(Dict(:impl_options => Dict(:num_subfeatures => 2)))
     combine_predictions = fit_and_transform!(learner, nfcp)
 
     # Verify RandomForest didn't die
-    @fact 1 => 1
+    @fact 1 --> 1
   end
 end
 

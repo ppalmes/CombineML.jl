@@ -88,7 +88,7 @@ facts("Combine system") do
     pipeline = Pipeline({:transformers => transformers})
     predictions = fit_and_transform!(pipeline, fcp)
 
-    @fact 1 => 1
+    @fact 1 --> 1
   end
 end
 

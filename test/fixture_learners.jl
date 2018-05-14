@@ -4,43 +4,43 @@ importall Combine.Types
 importall Combine.Util
 
 export MLProblem,
-       Classification,
-       FeatureClassification,
-       NumericFeatureClassification,
-       PerfectScoreLearner,
-       AlwaysSameLabelLearner,
-       fit_and_transform!,
-       fit!,
-       transform!
-       
-abstract MLProblem
-abstract Classification <: MLProblem
+Classification,
+FeatureClassification,
+NumericFeatureClassification,
+PerfectScoreLearner,
+AlwaysSameLabelLearner,
+fit_and_transform!,
+fit!,
+transform!
+
+abstract type MLProblem end
+abstract type Classification <: MLProblem end
 
 # NOTE(svs14): Currently hardcoded example. 
 #              Consider turning into rule-based generator.
 train_dataset = [
   1.0        1 "b"  2 "c" "a";
   2.0        2 "b"  3 "c" "a";
-  nan(3.0)   3 "b"  4 "c" "a";
+  3.0   3 "b"  4 "c" "a";
   -1.0      -1 "d" -2 "c" "b";
   -2.0      -2 "d" -3 "c" "b";
-  nan(-3.0) -3 "d" -4 "c" "b";
+  -3.0 -3 "d" -4 "c" "b";
   1.0        1 "a"  1 "a" "c";
   2.0        2 "b"  2 "b" "c";
-  nan(3.0)   3 "c"  3 "c" "c";
+  3.0   3 "c"  3 "c" "c";
   0.0        0 "e"  1 "a" "d";
   0.0        0 "e"  2 "b" "d";
-  nan(0.0)   0 "e"  3 "c" "d";
+  0.0   0 "e"  3 "c" "d";
 ]
 test_dataset = [
   4.0        4 "b"  5 "c" "a";
-  nan(5.0)   5 "b"  6 "c" "a";
+  5.0   5 "b"  6 "c" "a";
   -4.0      -4 "d" -5 "c" "b";
-  nan(-5.0) -5 "d" -6 "c" "b";
+  -5.0 -5 "d" -6 "c" "b";
   4.0        4 "d"  4 "d" "c";
-  nan(5.0)   5 "e"  5 "e" "c";
+  5.0   5 "e"  5 "e" "c";
   0.0        0 "e"  4 "d" "d";
-  nan(0.0)   0 "e"  5 "e" "d";
+  0.0   0 "e"  5 "e" "d";
 ]
 
 type FeatureClassification <: Classification
@@ -95,10 +95,10 @@ type PerfectScoreLearner <: TestLearner
   options
 
   function PerfectScoreLearner(options=Dict())
-    default_options = {
+    default_options = Dict(
       :output => :class,
       :problem => NumericFeatureClassification()
-    }
+     )
     new(nothing, nested_dict_merge(default_options, options))
   end
 end
@@ -116,9 +116,9 @@ function fit!(
     dataset[i,1:2] => dataset[i,3] for i=1:size(dataset, 1)
   ]
 
-  psl.model = {
+  psl.model = Dict(
     :map => instance_label_map
-  }
+   )
 end
 
 function transform!(
@@ -137,23 +137,23 @@ type AlwaysSameLabelLearner <: TestLearner
   options
 
   function AlwaysSameLabelLearner(options=Dict())
-    default_options = {
+    default_options = Dict(
       :output => :class,
       :label => nothing
-    }
+     )
     new(nothing, nested_dict_merge(default_options, options))
   end
 end
 
 function fit!(awsl::AlwaysSameLabelLearner, instances::Matrix, labels::Vector)
   if awsl.options[:label] == nothing
-    awsl.model = {
+    awsl.model = Dict(
       :label => first(labels)
-    }
+     )
   else
-    awsl.model = {
+    awsl.model = Dict(
       :label => awsl.options[:label]
-    }
+     )
   end
 end
 

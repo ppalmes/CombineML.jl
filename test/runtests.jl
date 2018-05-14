@@ -7,7 +7,7 @@ module TestRunner
   include(joinpath("combine", "test_transformers.jl"))
   include(joinpath("julia", "test_decisiontree.jl"))
   include(joinpath("julia", "test_mlbase.jl"))
-  include(joinpath("julia", "test_dimensionalityreduction.jl"))
+  #include(joinpath("julia", "test_dimensionalityreduction.jl"))
   include(joinpath("combine", "test_ensemble.jl"))
   if LIB_SKL_AVAILABLE
     include(joinpath("python", "test_scikit_learn.jl"))

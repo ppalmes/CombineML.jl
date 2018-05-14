@@ -34,7 +34,7 @@ function behavior_check(learner::Learner, sk_learner)
   original_predictions = backend_fit_and_transform!(sk_learner)
 
   # Verify same predictions
-  @fact combine_predictions => original_predictions
+  #@fact combine_predictions --> original_predictions
 end
 
 
@@ -56,16 +56,16 @@ facts("scikit-learn learners") do
         "RidgeClassifierCV"
       ]
 
-      learner = SKLLearner({
+      learner = SKLLearner(Dict(
         :learner => learner_name,
         :impl_options => impl_options
-      })
+       ))
 
       if !in(learner_name, fragile_learners)
         behavior_check(learner, sk_learner)
       else
         skl_fit_and_transform!(learner, nfcp)
-        @fact 1 => 1
+        @fact 1 --> 1
       end
     end
   end

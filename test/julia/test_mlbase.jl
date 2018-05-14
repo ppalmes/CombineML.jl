@@ -30,7 +30,7 @@ facts("MLBase transformers") do
     fit!(standard_scaler, instances, labels)
     transformed = transform!(standard_scaler, instances)
 
-    @fact transformed => expected_transformed
+    @fact transformed --> expected_transformed
   end
 end
 
