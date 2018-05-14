@@ -1,9 +1,9 @@
-julia 0.5-
-FactCheck 0.1-
-DecisionTree 0.2-
-MLBase 0.3-
-StatsBase 0.6-
-PyCall 0.4-
-#DimensionalityReduction 0.1-
-Iterators 0.1-
-ArrayViews
+julia 0.6-
+FactCheck 0.4-
+DecisionTree 0.6-
+MLBase 0.6-
+StatsBase 0.19-
+PyCall 1.10-
+MultivariateStats 0.3-
+Iterators 0.3-
+ArrayViews 0.6-
