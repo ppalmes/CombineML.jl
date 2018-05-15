@@ -7,7 +7,7 @@ fcp = FeatureClassification()
 using FactCheck
 
 
-importall Combine.Transformers.MLBaseWrapper
+importall CombineML.Transformers.MLBaseWrapper
 
 facts("MLBase transformers") do
   context("StandardScaler transforms features") do

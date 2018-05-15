@@ -1,8 +1,8 @@
 # MLBase transformers.
 module MLBaseWrapper
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 import MLBase: Standardize, estimate, transform
 

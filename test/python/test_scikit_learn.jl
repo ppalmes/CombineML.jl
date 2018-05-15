@@ -7,8 +7,8 @@ nfcp = NumericFeatureClassification()
 using FactCheck
 
 
-importall Combine.Types
-importall Combine.Transformers.ScikitLearnWrapper
+importall CombineML.Types
+importall CombineML.Transformers.ScikitLearnWrapper
 using PyCall
 @pyimport sklearn.neighbors as NN
 @pyimport random as RAN
@@ -27,14 +27,14 @@ function backend_fit_and_transform!(sk_learner, seed=1)
 end
 
 function behavior_check(learner::Learner, sk_learner)
-  # Predict with Combine learner
-  combine_predictions = skl_fit_and_transform!(learner, nfcp)
+  # Predict with CombineML learner
+  combineml_predictions = skl_fit_and_transform!(learner, nfcp)
 
   # Predict with original backend learner
   original_predictions = backend_fit_and_transform!(sk_learner)
 
   # Verify same predictions
-  #@fact combine_predictions --> original_predictions
+  #@fact combineml_predictions --> original_predictions
 end
 
 

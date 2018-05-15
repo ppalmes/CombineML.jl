@@ -1,7 +1,7 @@
 module FixtureLearners
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 export MLProblem,
 Classification,

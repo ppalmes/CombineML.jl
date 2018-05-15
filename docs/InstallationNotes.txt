@@ -5,8 +5,8 @@ env ARCHFLAGS="-arch i386 -arch x86_64" pip install rpy2
     2. ENV["R_HOME"]="/pathto/anaconda2/lib/R"
 2. conda install -c r rpy2
 3. conda install scikit-learn
-4. using Combine
-5. TODO: Base.compilecache("Combine”): to pre-compile
+4. using CombineML
+5. TODO: Base.compilecache("CombineML”): to pre-compile
     1. http://docs.julialang.org/en/release-0.4/manual/modules/
     2. https://en.wikibooks.org/wiki/Introducing_Julia/Modules_and_packages
 6. Pkg.add(“PyCall”)

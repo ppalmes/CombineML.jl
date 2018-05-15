@@ -8,8 +8,8 @@ using FactCheck
 
 
 using MLBase
-importall Combine.Types
-importall Combine.Transformers.CaretWrapper
+importall CombineML.Types
+importall CombineML.Transformers.CaretWrapper
 CW = CaretWrapper
 using PyCall
 @pyimport rpy2.robjects as RO
@@ -19,14 +19,14 @@ N2R.activate()
 RP.importr("caret")
 
 function behavior_check(caret_learner::String, impl_options=Dict())
-  # Predict with Combine learner
+  # Predict with CombineML learner
   srand(1)
   pycall(RO.r["set.seed"], PyObject, 1)
   learner = CRTLearner({
     :learner => caret_learner, 
     :impl_options => impl_options
   })
-  combine_predictions = fit_and_transform!(learner, nfcp)
+  combineml_predictions = fit_and_transform!(learner, nfcp)
 
   # Predict with backend learner
   srand(1)
@@ -64,7 +64,7 @@ function behavior_check(caret_learner::String, impl_options=Dict())
   original_predictions = map(x -> label_factors[x], original_predictions)
 
   # Verify same predictions
-  @fact combine_predictions => original_predictions
+  @fact combineml_predictions => original_predictions
 end
 
 facts("CARET learners") do

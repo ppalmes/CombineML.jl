@@ -1,5 +1,5 @@
-# Combine module
-module Combine
+# CombineML module
+module CombineML
 
 # Load source files
 include("system.jl")

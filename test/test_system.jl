@@ -1,10 +1,10 @@
 # System tests.
 module TestSystem
 
-using Combine.Types
-using Combine.System
-using Combine.Transformers
-importall Combine.Util
+using CombineML.Types
+using CombineML.System
+using CombineML.Transformers
+importall CombineML.Util
 
 include("fixture_learners.jl")
 using .FixtureLearners
@@ -31,7 +31,7 @@ concrete_learner_types = setdiff(
 using FactCheck
 
 
-facts("Combine system") do
+facts("CombineML system") do
   context("All learners train and predict on fixture data.") do
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
@@ -43,7 +43,7 @@ facts("Combine system") do
 
   context("All learners train and predict on iris dataset.") do
     # Get data
-    dataset = readcsv(joinpath(Pkg.dir("Combine"),"test", "iris.csv"))
+    dataset = readcsv(joinpath(Pkg.dir("CombineML"),"test", "iris.csv"))
     features = dataset[:,1:(end-1)]
     labels = dataset[:, end]
     (train_ind, test_ind) = holdout(size(features, 1), 0.3)

@@ -7,14 +7,14 @@ nfcp = NumericFeatureClassification()
 using FactCheck
 
 
-importall Combine.Transformers.DecisionTreeWrapper
+importall CombineML.Transformers.DecisionTreeWrapper
 using DecisionTree
 
 facts("DecisionTree learners") do
   context("PrunedTree gives same results as its backend") do
-    # Predict with Combine learner
+    # Predict with CombineML learner
     learner = PrunedTree()
-    combine_predictions = fit_and_transform!(learner, nfcp)
+    combineml_predictions = fit_and_transform!(learner, nfcp)
 
     # Predict with original backend learner
     srand(1)
@@ -23,13 +23,13 @@ facts("DecisionTree learners") do
     original_predictions = apply_tree(model, nfcp.test_instances)
 
     # Verify same predictions
-    @fact combine_predictions --> original_predictions
+    @fact combineml_predictions --> original_predictions
   end
 
   context("RandomForest gives same results as its backend") do
-    # Predict with Combine learner
+    # Predict with CombineML learner
     learner = RandomForest()
-    combine_predictions = fit_and_transform!(learner, nfcp)
+    combineml_predictions = fit_and_transform!(learner, nfcp)
 
     # Predict with original backend learner
     srand(1)
@@ -43,13 +43,13 @@ facts("DecisionTree learners") do
     original_predictions = apply_forest(model, nfcp.test_instances)
 
     # Verify same predictions
-    @fact combine_predictions --> original_predictions
+    @fact combineml_predictions --> original_predictions
   end
 
   context("DecisionStumpAdaboost gives same results as its backend") do
-    # Predict with Combine learner
+    # Predict with CombineML learner
     learner = DecisionStumpAdaboost()
-    combine_predictions = fit_and_transform!(learner, nfcp)
+    combineml_predictions = fit_and_transform!(learner, nfcp)
 
     # Predict with original backend learner
     srand(1)
@@ -63,13 +63,13 @@ facts("DecisionTree learners") do
     )
 
     # Verify same predictions
-    @fact combine_predictions --> original_predictions
+    @fact combineml_predictions --> original_predictions
   end
 
   context("RandomForest handles training-dependent options") do
-    # Predict with Combine learner
+    # Predict with CombineML learner
     learner = RandomForest(Dict(:impl_options => Dict(:num_subfeatures => 2)))
-    combine_predictions = fit_and_transform!(learner, nfcp)
+    combineml_predictions = fit_and_transform!(learner, nfcp)
 
     # Verify RandomForest didn't die
     @fact 1 --> 1

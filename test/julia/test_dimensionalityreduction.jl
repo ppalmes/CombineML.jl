@@ -7,7 +7,7 @@ fcp = FeatureClassification()
 using FactCheck
 
 
-importall Combine.Transformers.DimensionalityReductionWrapper
+importall CombineML.Transformers.DimensionalityReductionWrapper
 
 facts("DimensionalityReduction transformers") do
   context("PCA transforms features") do

@@ -1,7 +1,7 @@
 # Various functions that work with learners.
 module Util
 
-importall Combine.Types
+importall CombineML.Types
 import MLBase: Kfold
 
 export holdout,

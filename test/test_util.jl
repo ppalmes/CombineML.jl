@@ -3,13 +3,13 @@ module TestUtil
 using FactCheck
 
 
-importall Combine.Util
+importall CombineML.Util
 
 include("fixture_learners.jl")
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
-facts("Combine util functions") do
+facts("CombineML util functions") do
   context("holdout returns proportional partitions") do
     n = 10
     right_prop = 0.3

@@ -1,14 +1,14 @@
 #Run all tests.
 module TestRunner
   using FactCheck
-  using Combine.System
+  using CombineML.System
 
   include("test_util.jl")
-  include(joinpath("combine", "test_transformers.jl"))
+  include(joinpath("combineml", "test_transformers.jl"))
   include(joinpath("julia", "test_decisiontree.jl"))
   include(joinpath("julia", "test_mlbase.jl"))
   #include(joinpath("julia", "test_dimensionalityreduction.jl"))
-  include(joinpath("combine", "test_ensemble.jl"))
+  include(joinpath("combineml", "test_ensemble.jl"))
   if LIB_SKL_AVAILABLE
     include(joinpath("python", "test_scikit_learn.jl"))
   else

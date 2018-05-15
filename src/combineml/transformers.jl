@@ -1,8 +1,8 @@
-# Transformers provided by Combine.
-module CombineTransformers
+# Transformers provided by CombineML.
+module CombineMLTransformers
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 export OneHotEncoder,
        Imputer,
@@ -195,7 +195,7 @@ function transform!(pipe::Pipeline, instances::Matrix)
 end
 
 
-# Wraps around an Combine transformer.
+# Wraps around an CombineML transformer.
 mutable struct Wrapper <: Transformer
   model
   options

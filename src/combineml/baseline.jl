@@ -1,8 +1,8 @@
 # Baseline methods.
 module BaselineMethods
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 import StatsBase: mode
 
 export Baseline,

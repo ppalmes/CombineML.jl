@@ -1,8 +1,8 @@
 # Wrapper module for scikit-learn machine learners.
 module ScikitLearnWrapper
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 using PyCall
 @pyimport sklearn.ensemble as ENS
@@ -89,7 +89,7 @@ function fit!(sklw::SKLLearner, instances::Matrix, labels::Vector)
   learner = sklw.options[:learner]
   py_learner = learner_dict[learner]
 
-  # Assign Combine-specific defaults if required
+  # Assign CombineML-specific defaults if required
   if learner == "RadiusNeighborsClassifier"
     if get(impl_options, :outlier_label, nothing) == nothing
       impl_options[:outlier_label] = labels[rand(1:size(labels, 1))]

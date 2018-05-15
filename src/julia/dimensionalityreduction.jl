@@ -1,8 +1,8 @@
 # Dimensionality Reduction transformers.
 #module DimensionalityReductionWrapper
 #
-#importall Combine.Types
-#importall Combine.Util
+#importall CombineML.Types
+#importall CombineML.Util
 #import DimensionalityReduction: pca
 #
 #export PCA,

@@ -23,16 +23,16 @@ export Transformer,
        transform!
 
 ## Obtain system details
-import Combine.System: LIB_SKL_AVAILABLE, LIB_CRT_AVAILABLE
+import CombineML.System: LIB_SKL_AVAILABLE, LIB_CRT_AVAILABLE
 
 # Include abstract types as convenience
-importall Combine.Types
+importall CombineML.Types
 
-# Include atomic Combine transformers
-include(joinpath("combine", "baseline.jl"))
+# Include atomic CombineML transformers
+include(joinpath("CombineML", "baseline.jl"))
 importall .BaselineMethods
-include(joinpath("combine", "transformers.jl"))
-importall .CombineTransformers
+include(joinpath("CombineML", "transformers.jl"))
+importall .CombineMLTransformers
 
 ## Include Julia transformers
 include(joinpath("julia", "decisiontree.jl"))
@@ -55,7 +55,7 @@ if LIB_CRT_AVAILABLE
 end
 
 ## Include aggregate transformers last, dependent on atomic transformers
-include(joinpath("combine", "ensemble.jl"))
+include(joinpath("combineml", "ensemble.jl"))
 importall .EnsembleMethods
 
 end # module

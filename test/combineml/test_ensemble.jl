@@ -6,11 +6,11 @@ nfcp = NumericFeatureClassification()
 
 using FactCheck
 
-importall Combine.Transformers.EnsembleMethods
-import Combine.Transformers.DecisionTreeWrapper: fit!, transform!
-import Combine.Transformers.DecisionTreeWrapper: PrunedTree
-import Combine.Transformers.DecisionTreeWrapper: RandomForest
-import Combine.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
+importall CombineML.Transformers.EnsembleMethods
+import CombineML.Transformers.DecisionTreeWrapper: fit!, transform!
+import CombineML.Transformers.DecisionTreeWrapper: PrunedTree
+import CombineML.Transformers.DecisionTreeWrapper: RandomForest
+import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
 
 facts("Ensemble learners") do
   context("VoteEnsemble predicts according to majority") do
@@ -30,7 +30,7 @@ facts("Ensemble learners") do
     @fact predictions --> expected_predictions
   end
 
-#  context("StackEnsemble predicts with combined learners") do
+#  context("StackEnsemble predicts with CombineMLd learners") do
 #    # Fix random seed, due to stochasticity in stacker.
 #    srand(2)
 #

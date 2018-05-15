@@ -1,17 +1,17 @@
 # Ensemble learning methods.
 module EnsembleMethods
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 import StatsBase
 import Iterators: product
 import MLBase
 
-import Combine.Transformers.DecisionTreeWrapper: fit!, transform!
-import Combine.Transformers.DecisionTreeWrapper: PrunedTree
-import Combine.Transformers.DecisionTreeWrapper: RandomForest
-import Combine.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
+import CombineML.Transformers.DecisionTreeWrapper: fit!, transform!
+import CombineML.Transformers.DecisionTreeWrapper: PrunedTree
+import CombineML.Transformers.DecisionTreeWrapper: RandomForest
+import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
 
 export VoteEnsemble, 
        StackEnsemble,

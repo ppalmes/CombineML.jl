@@ -1,17 +1,17 @@
-#using Combine
-#Base.compilecache("Combine")
+#using CombineML
+#Base.compilecache("CombineML")
 
 # http://topepo.github.io/caret/available-models.html
 # https://github.com/svs14/Orchestra.jl
 
 addprocs()
 
-@everywhere import Combine.Util
-@everywhere import Combine.Transformers
+@everywhere import CombineML.Util
+@everywhere import CombineML.Transformers
 @everywhere import RDatasets
 
-@everywhere CU=Combine.Util
-@everywhere CT=Combine.Transformers
+@everywhere CU=CombineML.Util
+@everywhere CT=CombineML.Transformers
 @everywhere RD=RDatasets
 
 subtypes(CT.Transformer)

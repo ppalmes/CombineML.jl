@@ -1,4 +1,4 @@
-module TestCombineTransformers
+module TestCombineMLTransformers
 
 include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
@@ -8,9 +8,9 @@ nfcp = NumericFeatureClassification()
 using FactCheck
 
 
-importall Combine.Transformers.CombineTransformers
+importall CombineML.Transformers.CombineMLTransformers
 
-facts("Combine transformers") do
+facts("CombineML transformers") do
   context("OneHotEncoder transforms nominal features") do
     instances = [
       2 "a" 1 "c";

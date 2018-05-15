@@ -1,23 +1,23 @@
-Copyright for portions of project Combine.jl are held by Samuel Jenkins, 2014
-as part of project Orchestra.jl. All other copyright for project Combine.jl
+Copyright for portions of project CombineML.jl are held by Samuel Jenkins, 2014
+as part of project Orchestra.jl. All other copyright for project CombineML.jl
 are held by Paulito Palmes, 2016.
 
-The Combine.jl package is licensed under the MIT "Expat" License:
+The CombineML.jl package is licensed under the MIT "Expat" License:
 
-# Combine
+# CombineML
 
-[![Join the chat at https://gitter.im/Combine-jl/Lobby](https://badges.gitter.im/Combine-jl/Lobby.svg)](https://gitter.im/Combine-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/ppalmes/Combine.jl.svg?branch=master)](https://travis-ci.org/ppalmes/Combine.jl)
-[![Coverage Status](https://coveralls.io/repos/github/ppalmes/Combine.jl/badge.svg?branch=master)](https://coveralls.io/github/ppalmes/Combine.jl?branch=master)
+[![Build Status](https://travis-ci.org/ppalmes/CombineML.jl.svg?branch=master)](https://travis-ci.org/ppalmes/CombineML.jl)
+[![Coverage Status](https://coveralls.io/repos/github/ppalmes/CombineML.jl/badge.svg?branch=master)](https://coveralls.io/github/ppalmes/CombineML.jl?branch=master)
 
-Combine is a heterogeneous ensemble learning package for the Julia programming
+CombineML is a heterogeneous ensemble learning package for the Julia programming
 language. It is driven by a uniform machine learner API designed for learner
 composition.
 
 ## Getting Started
 
-We will cover how to predict on a dataset using Combine.
+We will cover how to predict on a dataset using CombineML.
 
 ### Obtain Data
 
@@ -27,8 +27,8 @@ This will be split it into a training and test set using holdout method.
 
 ```julia
 import RDatasets
-using Combine.Util
-using Combine.Transformers
+using CombineML.Util
+using CombineML.Transformers
 
 # Obtain features and labels
 dataset = RDatasets.dataset("datasets", "iris")
@@ -114,11 +114,11 @@ result = score(:accuracy, labels[test_ind], predictions)
 
 ## Available Transformers
 
-Outlined are all the transformers currently available via Combine.
+Outlined are all the transformers currently available via CombineML.
 
-### Combine
+### CombineML
 
-#### Baseline (Combine.jl Learner)
+#### Baseline (CombineML.jl Learner)
 
 Baseline learner that by default assigns the most frequent label.
 ```julia
@@ -132,14 +132,14 @@ learner = Baseline(Dict(
 ))
 ```
 
-#### Identity (Combine.jl Transformer)
+#### Identity (CombineML.jl Transformer)
 
 Identity transformer passes the features as is.
 ```julia
 transformer = Identity()
 ```
 
-#### VoteEnsemble (Combine.jl Learner)
+#### VoteEnsemble (CombineML.jl Learner)
 
 Set of machine learners that majority vote to decide prediction.
 ```julia
@@ -152,7 +152,7 @@ learner = VoteEnsemble(Dict(
 ))
 ```
 
-#### StackEnsemble (Combine.jl Learner)
+#### StackEnsemble (CombineML.jl Learner)
 
 Ensemble where a 'stack' learner learns on a set of learners' predictions.
 ```julia
@@ -171,7 +171,7 @@ learner = StackEnsemble(Dict(
 ))
 ```
 
-#### BestLearner (Combine.jl Learner)
+#### BestLearner (CombineML.jl Learner)
 
 Selects best learner out of set. 
 Will perform a grid search on learners if options grid is provided.
@@ -197,7 +197,7 @@ learner = BestLearner(Dict(
 ))
 ```
 
-#### OneHotEncoder (Combine.jl Transformer)
+#### OneHotEncoder (CombineML.jl Transformer)
 
 Transforms nominal features into one-hot form 
 and coerces the instance matrix to be of element type Float64.
@@ -211,7 +211,7 @@ transformer = OneHotEncoder(Dict(
 ))
 ```
 
-#### Imputer (Combine.jl Transformer)
+#### Imputer (CombineML.jl Transformer)
 
 Imputes NaN values from Float64 features.
 ```julia
@@ -222,7 +222,7 @@ transformer = Imputer(Dict(
 ))
 ```
 
-#### Pipeline (Combine.jl Transformer)
+#### Pipeline (CombineML.jl Transformer)
 
 Chains multiple transformers in sequence.
 ```julia
@@ -234,9 +234,9 @@ transformer = Pipeline(Dict(
 ))
 ```
 
-#### Wrapper (Combine.jl Transformer)
+#### Wrapper (CombineML.jl Transformer)
 
-Wraps around an Combine transformer.
+Wraps around an CombineML transformer.
 ```julia
 transformer = Wrapper(Dict(
   # Transformer to call.

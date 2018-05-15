@@ -1,4 +1,4 @@
-# Combine types.
+# CombineML types.
 module Types
 
 export Transformer,

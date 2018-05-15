@@ -1,8 +1,8 @@
 # Decision trees as found in DecisionTree Julia package.
 module DecisionTreeWrapper
 
-importall Combine.Types
-importall Combine.Util
+importall CombineML.Types
+importall CombineML.Util
 
 import DecisionTree
 DT = DecisionTree
@@ -25,7 +25,7 @@ mutable struct PrunedTree <: Learner
       :output => :class,
       # Options specific to this implementation.
       :impl_options => Dict(
-        # Merge leaves having >= purity_threshold combined purity.
+        # Merge leaves having >= purity_threshold CombineMLd purity.
         :purity_threshold => 1.0
       )
     )
@@ -114,7 +114,7 @@ function fit!(adaboost::DecisionStumpAdaboost,
   # NOTE(svs14): Variable 'model' renamed to 'ensemble'.
   #              This differs to DecisionTree
   #              official documentation to avoid confusion in variable
-  #              naming within Combine.
+  #              naming within CombineML.
   ensemble, coefficients = DT.build_adaboost_stumps(
     labels, instances, adaboost.options[:impl_options][:num_iterations]
   )
