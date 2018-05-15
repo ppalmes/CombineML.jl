@@ -82,7 +82,7 @@ facts("CombineML system") do
     transformers = [
       OneHotEncoder(),
       Imputer(),
-      StandardScaler(),
+      #StandardScaler(),
       BestLearner()
     ]
     pipeline = Pipeline(Dict(:transformers => transformers))
