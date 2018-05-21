@@ -29,7 +29,7 @@ import CombineML.System: LIB_SKL_AVAILABLE, LIB_CRT_AVAILABLE
 importall CombineML.Types
 
 # Include atomic CombineML transformers
-include(joinpath("CombineML", "baseline.jl"))
+include(joinpath("combineml", "baseline.jl"))
 importall .BaselineMethods
 include(joinpath("CombineML", "transformers.jl"))
 importall .CombineMLTransformers
