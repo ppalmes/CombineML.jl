@@ -9,7 +9,7 @@ importall CombineML.Util
 include("fixture_learners.jl")
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
-fcp = FeatureClassification()
+fcp = FixtureLearners.FeatureClassification()
 
 function all_concrete_subtypes(a_type::Type)
   a_subtypes = Type[]
@@ -28,20 +28,19 @@ concrete_learner_types = setdiff(
   all_concrete_subtypes(TestLearner)
 )
 
-using FactCheck
+using Base.Test
 
+@testset "CombineML system" begin
 
-facts("CombineML system") do
-  context("All learners train and predict on fixture data.") do
+  @testset "All learners train and predict on fixture data." begin
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
       fit_and_transform!(learner, nfcp)
+      @test learner.model != Void
     end
-
-    @fact 1 --> 1
   end
 
-  context("All learners train and predict on iris dataset.") do
+  @testset "All learners train and predict on iris dataset." begin
     # Get data
     dataset = readcsv(joinpath(Pkg.dir("CombineML"),"test", "iris.csv"))
     features = dataset[:,1:(end-1)]
@@ -51,18 +50,16 @@ facts("CombineML system") do
     test_features = features[test_ind, :]
     train_labels = labels[train_ind]
     test_labels = labels[test_ind]
-
     # Test all learners
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
       fit!(learner, train_features, train_labels)
       transform!(learner, test_features)
+      @test learner.model != Void
     end
-
-    @fact 1--> 1
   end
 
-  context("Ensemble with learners from different libraries work.") do 
+  @testset "Ensemble with learners from different libraries work." begin 
     learners = Learner[]
     push!(learners, RandomForest())
     push!(learners, StackEnsemble())
@@ -74,11 +71,10 @@ facts("CombineML system") do
     end
     ensemble = VoteEnsemble(Dict(:learners => learners))
     predictions = fit_and_transform!(ensemble, nfcp)
-
-    @fact 1 --> 1
+    @test predictions == Any["a","a","b","b","a","a","d","d"]
   end
 
-  context("Pipeline works with fixture data.") do
+  @testset "Pipeline works with fixture data." begin
     transformers = [
       OneHotEncoder(),
       Imputer(),
@@ -87,9 +83,9 @@ facts("CombineML system") do
     ]
     pipeline = Pipeline(Dict(:transformers => transformers))
     predictions = fit_and_transform!(pipeline, fcp)
-
-    @fact 1 --> 1
+    @test predictions == Any["a","a","b","b","c","c","d","d"]
   end
+
 end
 
 end # module

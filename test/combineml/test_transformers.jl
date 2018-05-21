@@ -5,13 +5,14 @@ using .FixtureLearners
 fcp = FeatureClassification()
 nfcp = NumericFeatureClassification()
 
-using FactCheck
+using Base.Test
 
 
 importall CombineML.Transformers.CombineMLTransformers
 
-facts("CombineML transformers") do
-  context("OneHotEncoder transforms nominal features") do
+@testset "CombineML transformers" begin
+
+  @testset "OneHotEncoder transforms nominal features" begin
     instances = [
       2 "a" 1 "c";
       1 "b" 2 "d";
@@ -27,8 +28,7 @@ facts("CombineML transformers") do
     encoder = OneHotEncoder()
     fit!(encoder, instances, labels)
     transformed = transform!(encoder, instances)
-
-    @fact transformed --> expected_transformed
+    @test transformed == expected_transformed
   end
 
 #  context("OneHotEncoder transforms with options") do
@@ -47,15 +47,14 @@ facts("CombineML transformers") do
 #    @fact size(transformed, 2) --> 13
 #  end
 
-  context("OneHotEncoder handles no nominal features") do
+  @testset "OneHotEncoder handles no nominal features" begin
     encoder = OneHotEncoder()
     fit!(encoder, nfcp.train_instances, nfcp.train_labels)
     transformed = transform!(encoder, nfcp.test_instances)
-
-    @fact size(transformed, 2) --> 2
+    @test size(transformed, 2) == 2
   end
 
-  context("Imputer replaces NA") do
+  @testset "Imputer replaces NA" begin
     instances = [
       1.0      1.0;
       NaN 1.0;
@@ -72,29 +71,27 @@ facts("CombineML transformers") do
     imputer = Imputer()
     fit!(imputer, instances, labels)
     transformed = transform!(imputer, instances)
-
-    @fact transformed --> expected_transformed
+    @test transformed == expected_transformed
   end
 
-  context("Pipeline chains transformers") do
+  @testset "Pipeline chains transformers" begin
     pipe = Pipeline()
     fit!(pipe, fcp.train_instances, fcp.train_labels)
     transformed = transform!(pipe, fcp.test_instances)
-
-    @fact size(transformed, 2) --> 11
-    @fact true --> !any(map(x -> isnan(x), transformed))
+    @test size(transformed, 2) == 11
+    @test true == !any(map(x -> isnan(x), transformed))
   end
 
-  context("Wrapper delegates to transformer") do
+  @testset "Wrapper delegates to transformer" begin
     wrapper = Wrapper(Dict(
       :transformer => OneHotEncoder(),
       :transformer_options => Dict()
      ))
     fit!(wrapper, fcp.train_instances, fcp.train_labels)
     transformed = transform!(wrapper, fcp.test_instances)
-
-    @fact size(transformed, 2) --> 11
+    @test size(transformed, 2) == 11
   end
+
 end
 
 end # module

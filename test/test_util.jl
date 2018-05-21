@@ -1,7 +1,8 @@
 module TestUtil
 
-using FactCheck
+using Base.Test
 
+#using FactCheck
 
 importall CombineML.Util
 
@@ -9,25 +10,24 @@ include("fixture_learners.jl")
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
-facts("CombineML util functions") do
-  context("holdout returns proportional partitions") do
+@testset "CombineML util functions" begin
+
+  @testset "holdout returns proportional partitions" begin
     n = 10
     right_prop = 0.3
     (left, right) = holdout(n, right_prop)
-
-    @fact size(left, 1) --> n - (n * right_prop)
-    @fact size(right, 1) --> n * right_prop
-    @fact intersect(left, right) --> isempty
-    @fact size(union(left, right), 1) --> n
+    @test size(left, 1) == n - (n * right_prop)
+    @test size(right, 1) == n * right_prop
+    @test intersect(left, right) |> isempty
+    @test size(union(left, right), 1) == n
   end
 
-  context("kfold returns k partitions") do
+  @testset "kfold returns k partitions" begin
     num_instances = 10
     num_partitions = 3
     partitions = kfold(num_instances, num_partitions)
-
-    @fact size(partitions, 1) --> num_partitions
-    [@fact length(partition) >= 6 --> true for partition in partitions]
+    @test size(partitions, 1) == num_partitions
+    [@test length(partition) >= 6 for partition in partitions]
   end
 
 #  context("score calculates accuracy") do
@@ -48,12 +48,12 @@ facts("CombineML util functions") do
 #    )
 #  end
 
-  context("infer_eltype returns inferred elements type") do
+  @testset "infer_eltype returns inferred elements type" begin
     vector = [1,2,3,"a"]
-    @fact infer_eltype(vector[1:3]) --> Int
+    @test infer_eltype(vector[1:3]) == Int
   end
 
-  context("nested_dict_to_tuples produces list of tuples") do
+  @testset "nested_dict_to_tuples produces list of tuples" begin
     nested_dict = Dict(
       :a => [1,2],
       :b => Dict(
@@ -65,11 +65,10 @@ facts("CombineML util functions") do
       ([:b,:c], [3,4,5])
      ])
     set = nested_dict_to_tuples(nested_dict)
-
-    @fact set --> expected_set
+    @test set == expected_set
   end
 
-  context("nested_dict_set! assigns values") do
+  @testset "nested_dict_set! assigns values" begin
     nested_dict = Dict(
       :a => 1,
       :b => Dict(
@@ -83,11 +82,10 @@ facts("CombineML util functions") do
        )
      )
     nested_dict_set!(nested_dict, [:b,:c], 3)
-
-    @fact nested_dict --> expected_dict
+    @test nested_dict == expected_dict
   end
 
-  context("nested_dict_merge merges two nested dictionaries") do
+  @testset "nested_dict_merge merges two nested dictionaries" begin
     first = Dict(
       :a => 1,
       :b => Dict(
@@ -109,19 +107,18 @@ facts("CombineML util functions") do
       )
      )
     actual = nested_dict_merge(first, second)
-
-    @fact actual --> expected
+    @test actual == expected
   end
 
-  context("create_transformer produces new transformer") do
+  @testset "create_transformer produces new transformer" begin
     learner = AlwaysSameLabelLearner(Dict(:label => :a))
     new_options = Dict(:label => :b)
     new_learner = create_transformer(learner, new_options)
-
-    @fact learner.options[:label] --> :a
-    @fact new_learner.options[:label] --> :b
-    @fact true --> !isequal(learner, new_learner)
+    @test learner.options[:label] == :a
+    @test new_learner.options[:label] == :b
+    @test true == !isequal(learner, new_learner)
   end
+
 end
 
 end # module

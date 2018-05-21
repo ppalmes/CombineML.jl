@@ -4,7 +4,7 @@ include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
-using FactCheck
+using Base.Test
 
 importall CombineML.Transformers.EnsembleMethods
 import CombineML.Transformers.DecisionTreeWrapper: fit!, transform!
@@ -12,8 +12,9 @@ import CombineML.Transformers.DecisionTreeWrapper: PrunedTree
 import CombineML.Transformers.DecisionTreeWrapper: RandomForest
 import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
 
-facts("Ensemble learners") do
-  context("VoteEnsemble predicts according to majority") do
+@testset "Ensemble learners" begin
+
+  @testset "VoteEnsemble predicts according to majority" begin
     always_a_options = Dict( :label => "a" )
     always_b_options = Dict( :label => "b" ) 
     learner = VoteEnsemble(Dict(
@@ -26,14 +27,12 @@ facts("Ensemble learners") do
     fit!(learner, nfcp.train_instances, nfcp.train_labels)
     predictions = transform!(learner, nfcp.test_instances)
     expected_predictions = fill("a", size(nfcp.test_instances, 1))
-
-    @fact predictions --> expected_predictions
+    @test  predictions == expected_predictions
   end
 
-#  context("StackEnsemble predicts with CombineMLd learners") do
+#  @testset "StackEnsemble predicts with CombineMLd learners" begin
 #    # Fix random seed, due to stochasticity in stacker.
 #    srand(2)
-#
 #    always_a_options = Dict( :label => "a" )
 #    learner = StackEnsemble(Dict(
 #      :learners => [
@@ -47,10 +46,10 @@ facts("Ensemble learners") do
 #    predictions = transform!(learner, nfcp.test_instances)
 #    unexpected_predictions = fill("a", size(nfcp.test_instances, 1))
 #
-#    @fact predictions --> not(unexpected_predictions)
+#    @test predictions == not(unexpected_predictions)
 #  end
 
-#  context("BestLearner picks the best learner") do
+#  @testset "BestLearner picks the best learner" begin
 #    always_a_options = Dict( :label => "a" )
 #    always_b_options = Dict( :label => "b" )
 #    learner = BestLearner(Dict(
@@ -62,10 +61,10 @@ facts("Ensemble learners") do
 #     ))
 #    fit!(learner, nfcp.train_instances, nfcp.train_labels)
 #
-#    @fact learner.model[:best_learner_index] --> 2
+#    @test learner.model[:best_learner_index] == 2
 #  end
 
-#  context("BestLearner conducts grid search") do
+#  testset "BestLearner conducts grid search" begin
 #    learner = BestLearner(Dict(
 #      :learners => [PrunedTree(), DecisionStumpAdaboost(), RandomForest()],
 #      :learner_options_grid => [
@@ -85,7 +84,7 @@ facts("Ensemble learners") do
 #     ))
 #    fit!(learner, nfcp.train_instances, nfcp.train_labels)
 #
-#    @fact length(learner.model[:learners]) --> 8
+#    @test length(learner.model[:learners]) == 8
 #  end
 end
 
