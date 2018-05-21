@@ -31,7 +31,7 @@ importall CombineML.Types
 # Include atomic CombineML transformers
 include(joinpath("combineml", "baseline.jl"))
 importall .BaselineMethods
-include(joinpath("CombineML", "transformers.jl"))
+include(joinpath("combineml", "transformers.jl"))
 importall .CombineMLTransformers
 
 ## Include Julia transformers
