@@ -1,6 +1,6 @@
 #Run all tests.
 module TestRunner
-  using FactCheck
+  using Base.Test
   using CombineML.System
 
   include("test_util.jl")
@@ -20,6 +20,4 @@ module TestRunner
     info("Skipping CARET tests.")
   end
   include("test_system.jl")
-
-  exitstatus()
 end # module

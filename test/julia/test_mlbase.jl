@@ -4,13 +4,13 @@ include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
 fcp = FeatureClassification()
 
-using FactCheck
-
+using Base.Test
 
 importall CombineML.Transformers.MLBaseWrapper
 
-facts("MLBase transformers") do
-#  context("StandardScaler transforms features") do
+@testset "MLBase transformers" begin
+
+#  @testset "StandardScaler transforms features" begin
 #    instances = [
 #      5 10;
 #      -5 0;
@@ -29,9 +29,9 @@ facts("MLBase transformers") do
 #    standard_scaler = StandardScaler()
 #    fit!(standard_scaler, instances, labels)
 #    transformed = transform!(standard_scaler, instances)
-#
-#    @fact transformed --> expected_transformed
+#    @test transformed == expected_transformed
 #  end
+
 end
 
 end # module
