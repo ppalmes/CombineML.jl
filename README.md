@@ -86,7 +86,7 @@ pipeline = Pipeline(Dict(
     OneHotEncoder(), # Encodes nominal features into numeric
     Imputer(), # Imputes NA values
     StandardScaler(), # Standardizes features 
-    PCA()
+    PCA(),
     learner # Predicts labels on features
   ]
 ))
