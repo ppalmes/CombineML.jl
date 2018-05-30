@@ -4,7 +4,9 @@ module MLBaseWrapper
 importall CombineML.Types
 importall CombineML.Util
 
-import MLBase: Standardize, estimate, transform
+include("standardize.jl")
+
+import .MStandardize: Standardize, estimate, transform
 
 export StandardScaler,
        fit!,

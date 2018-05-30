@@ -103,7 +103,7 @@ end
 # @param dict Nested dictionary to assign value.
 # @param keys Keys to access nested dictionaries in sequence.
 # @param value Value to assign.
-function nested_dict_set!{T}(dict::Dict, keys::Array{T, 1}, value)
+function nested_dict_set!(dict::Dict, keys::Array{T, 1}, value) where {T}
   inner_dict = dict
   for key in keys[1:end-1]
     inner_dict = inner_dict[key]

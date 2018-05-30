@@ -39,8 +39,8 @@ include(joinpath("julia", "decisiontree.jl"))
 importall .DecisionTreeWrapper
 include(joinpath("julia", "mlbase.jl"))
 importall .MLBaseWrapper
-#include(joinpath("julia", "dimensionalityreduction.jl"))
-#importall .DimensionalityReductionWrapper
+include(joinpath("julia", "dimensionalityreduction.jl"))
+importall .DimensionalityReductionWrapper
 
 # Include Python transformers
 if LIB_SKL_AVAILABLE

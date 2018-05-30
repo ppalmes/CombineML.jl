@@ -9,7 +9,6 @@ addprocs()
 @everywhere import CombineML.Util
 @everywhere import CombineML.Transformers
 @everywhere import RDatasets
-
 @everywhere CU=CombineML.Util
 @everywhere CT=CombineML.Transformers
 @everywhere RD=RDatasets
@@ -30,7 +29,8 @@ subtypes(CT.Learner)
         :transformers => [
           CT.OneHotEncoder(), # Encodes nominal features into numeric
           CT.Imputer(), # Imputes NA values
-          #StandardScaler(), # Standardizes features 
+          CT.StandardScaler(), # Standardizes features 
+          CT.PCA(),
           learner # Predicts labels on instances
         ]
       )
@@ -117,20 +117,20 @@ predict(ada)
 )
 predict(sk_learner)
 
-@everywhere crt_learner = CT.CRTLearner(
-  Dict(
-    :output => :class,
-    #:learner => "rf",
-    :learner => "svmLinear2",
-    #:learner => "rpart",
-    :impl_options => Dict()
-  )
-)
-predict(crt_learner)
+#@everywhere crt_learner = CT.CRTLearner(
+#  Dict(
+#    :output => :class,
+#    #:learner => "rf",
+#    :learner => "svmLinear2",
+#    #:learner => "rpart",
+#    :impl_options => Dict()
+#  )
+#)
+#predict(crt_learner)
 
 @everywhere stacklearner = CT.StackEnsemble(Dict(
     :output => :class,
-    :learners => [sk_learner,crt_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :stacker => 
        CT.RandomForest(
           Dict(
@@ -150,7 +150,7 @@ predict(stacklearner)
 
 @everywhere bestlearner = CT.BestLearner(
   Dict(
-    :learners => [stacklearner,sk_learner,crt_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :output => :class,
     :score_type => Real,
     :learner_options_grid => nothing
@@ -160,7 +160,7 @@ predict(bestlearner)
 
 @everywhere votelearner = CT.VoteEnsemble(
   Dict(
-    :learners => [stacklearner,sk_learner,crt_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :output => :class,
   )
 )
@@ -169,7 +169,7 @@ predict(votelearner)
 # All learners are called in the same way.
 @everywhere stackstacklearner = CT.StackEnsemble(
   Dict(
-    :learners => [stacklearner,bestlearner,votelearner,sk_learner,crt_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,bestlearner,votelearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     #:keep_original_features => false,
     #:stacker_training_proportion => 0.3,
     :stacker => 
@@ -213,18 +213,3 @@ function main(trials)
 end
 
 res=main(5) 
-
-#@everywhere macro suppress_err(block)
-#    quote
-#        if ccall(:jl_generating_output, Cint, ()) == 0
-#            ORIGINAL_STDERR = STDERR
-#            err_rd, err_wr = redirect_stderr()
-#            err_reader = @async readstring(err_rd)
-#            value = $(esc(block))
-#            @async wait(err_reader)
-#            REDIRECTED_STDERR = STDERR
-#            err_stream = redirect_stderr(ORIGINAL_STDERR)
-#            return value
-#        end
-#    end
-#end

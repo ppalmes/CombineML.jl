@@ -1,28 +1,31 @@
 module TestDimensionalityReductionWrapper
 
-include(joinpath("..", "fixture_learners.jl"))
-using .FixtureLearners
-fcp = FeatureClassification()
-
-using FactCheck
-
-
+using Base.Test
+import MultivariateStats: reconstruct
 importall CombineML.Transformers.DimensionalityReductionWrapper
 
-facts("DimensionalityReduction transformers") do
-  context("PCA transforms features") do
+#include(joinpath("..", "fixture_learners.jl"))
+#using .FixtureLearners
+#fcp = FeatureClassification()
+
+
+@testset "DimensionalityReduction transformers" begin
+  @testset "PCA transforms features" begin
+
     instances = [
-      5 10;
-      -5 0;
-      0 5;
+      5.0 10.0;
+      -5.0 0.0;
+      0.0 5.0;
     ]
     labels = ["x"; "y"; "z"]
-    options = {:center => false, :scale => false}
+
+    options = Dict(:pratio => 1.0,:maxoutdim => 2)
     pca = PCA(options)
     fit!(pca, instances, labels)
     transformed = transform!(pca, instances)
+    @test reconstruct(pca.model,transformed')' ≈ instances
+    @test  transformed * pca.model.proj' .+ pca.model.mean' ≈ instances
 
-    @fact true => maximum(instances - transformed * pca.model.rotation') < 10e-4
   end
 end
 
