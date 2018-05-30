@@ -17,6 +17,8 @@ composition.
 
 ## Getting Started
 
+See the notebook for demo: [MetaModeling.ipnyb](https://github.com/ppalmes/CombineML.jl/blob/master/MetaModeling.ipynb)
+
 We will cover how to predict on a dataset using CombineML.
 
 ### Obtain Data
