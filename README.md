@@ -327,9 +327,9 @@ Will produce NaN if standard deviation is zero.
 ```julia
 transformer = StandardScaler(Dict(
   # Center features
-  :center => true,
+  :pratio => 1.0,
   # Scale features
-  :scale => true
+  :maxoutdim => 5
 ))
 ```
 
