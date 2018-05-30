@@ -310,13 +310,11 @@ Principal Component Analysis rotation
 on features.
 Features ordered by maximal variance descending.
 
-Fails if zero-variance feature exists.
+Fails if zero-variance feature exists. Based on MultivariateStats PCA
 ```julia
 transformer = PCA(Dict(
-  # Center features
-  :center => true,
-  # Scale features
-  :scale => true
+  :pratio => 1.0,
+  :maxoutdim => 5
 ))
 ```
 
@@ -327,9 +325,9 @@ Will produce NaN if standard deviation is zero.
 ```julia
 transformer = StandardScaler(Dict(
   # Center features
-  :pratio => 1.0,
+  :center => true,
   # Scale features
-  :maxoutdim => 5
+  :scale => true
 ))
 ```
 
