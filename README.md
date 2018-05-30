@@ -85,7 +85,8 @@ pipeline = Pipeline(Dict(
   :transformers => [
     OneHotEncoder(), # Encodes nominal features into numeric
     Imputer(), # Imputes NA values
-    #StandardScaler(), # Standardizes features 
+    StandardScaler(), # Standardizes features 
+    PCA()
     learner # Predicts labels on features
   ]
 ))
