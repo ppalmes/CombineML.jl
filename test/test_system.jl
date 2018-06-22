@@ -78,12 +78,12 @@ using Base.Test
     transformers = [
       OneHotEncoder(),
       Imputer(),
-      #StandardScaler(),
+      StandardScaler(),
       BestLearner()
     ]
     pipeline = Pipeline(Dict(:transformers => transformers))
     predictions = fit_and_transform!(pipeline, fcp)
-    @test predictions == Any["a","a","b","b","c","c","d","d"]
+    @test predictions == Any["a","a","b","b","a","a","d","d"] || prediction == Any["a","a","b","b","c","c","d","d"]
   end
 
 end

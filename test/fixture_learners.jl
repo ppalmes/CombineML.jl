@@ -103,8 +103,7 @@ type PerfectScoreLearner <: TestLearner
   end
 end
 
-function fit!(
-  psl::PerfectScoreLearner, instances::Matrix, labels::Vector)
+function fit!(psl::PerfectScoreLearner, instances::Matrix, labels::Vector)
 
   problem = psl.options[:problem]
 
@@ -121,11 +120,10 @@ function fit!(
    )
 end
 
-function transform!(
-  psl::PerfectScoreLearner, instances::Matrix)
+function transform!(psl::PerfectScoreLearner, instances::Matrix)
 
   num_instances = size(instances, 1)
-  predictions = Array(String, num_instances)
+  predictions = Array{String}(num_instances)
   for i in 1:num_instances
     predictions[i] = psl.model[:map][instances[i,:]]
   end
