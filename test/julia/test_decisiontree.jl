@@ -17,7 +17,15 @@ using DecisionTree
     combineml_predictions = fit_and_transform!(learner, nfcp)
     # Predict with original backend learner
     srand(1)
-    model = build_tree(nfcp.train_labels, nfcp.train_instances)
+    model = build_tree(
+      nfcp.train_labels,
+      nfcp.train_instances,
+      0,  # num_subfeatures
+      -1, # max_depth
+      1,  # min_samples_leaf
+      2,  # min_samples_split
+      0.0 # min_purity_increase
+    )
     model = prune_tree(model, 1.0)
     original_predictions = apply_tree(model, nfcp.test_instances)
     # Verify same predictions
@@ -35,7 +43,8 @@ using DecisionTree
       nfcp.train_instances,
       size(nfcp.train_instances, 2),
       10,
-      0.7
+      0.7,
+      -1
     )
     original_predictions = apply_forest(model, nfcp.test_instances)
     # Verify same predictions
