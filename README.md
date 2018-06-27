@@ -262,7 +262,7 @@ learner = PrunedTree(Dict(
   :output => :class,
   # Options specific to this implementation.
   :impl_options => Dict(
-    # Merge leaves having >= purity_threshold CombineMLd purity.
+    # Merge leaves having >= purity_threshold combined purity.
     :purity_threshold => 1.0,
     # Maximum depth of the decision tree (default: no maximum).
     :max_depth => -1,
@@ -270,7 +270,7 @@ learner = PrunedTree(Dict(
     :min_samples_leaf => 1,
     # Minimum number of samples in needed for a split.
     :min_samples_split => 2,
-    # Minimum purity needed for a split.
+    # Minimum purity increase needed for a split.
     :min_purity_increase => 0.0
   ) 
 ))
@@ -288,7 +288,7 @@ learner = RandomForest(Dict(
   :impl_options => Dict(
     # Number of features to train on with trees (default: 0, keep all).
     # Good values are square root or log2 of total number of features, rounded.
-    :num_subinstances => 0,
+    :num_subfeatures => 0,
     # Number of trees in forest.
     :num_trees => 10,
     # Proportion of trainingset to be used for trees.
