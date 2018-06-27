@@ -13,7 +13,7 @@ export PrunedTree,
        fit!, 
        transform!
 
-# Pruned ID3 decision tree.
+# Pruned CART decision tree.
 mutable struct PrunedTree <: Learner
   model
   options
@@ -26,7 +26,15 @@ mutable struct PrunedTree <: Learner
       # Options specific to this implementation.
       :impl_options => Dict(
         # Merge leaves having >= purity_threshold CombineMLd purity.
-        :purity_threshold => 1.0
+        :purity_threshold => 1.0,
+        # Maximum depth of the decision tree (default: no maximum).
+        :max_depth => -1,
+        # Minimum number of samples each leaf needs to have.
+        :min_samples_leaf => 1,
+        # Minimum number of samples in needed for a split.
+        :min_samples_split => 2,
+        # Minimum purity needed for a split.
+        :min_purity_increase => 0.0
       )
     )
     new(nothing, nested_dict_merge(default_options, options))
@@ -35,14 +43,21 @@ end
 
 function fit!(tree::PrunedTree, instances::Matrix, labels::Vector)
   impl_options = tree.options[:impl_options]
-  tree.model = DT.build_tree(labels, instances)
+  tree.model = DT.build_tree(
+    labels,
+    instances,
+    0, # num_subfeatures (keep all)
+    impl_options[:max_depth],
+    impl_options[:min_samples_leaf],
+    impl_options[:min_samples_split],
+    impl_options[:min_purity_increase])
   tree.model = DT.prune_tree(tree.model, impl_options[:purity_threshold])
 end
 function transform!(tree::PrunedTree, instances::Matrix)
   return DT.apply_tree(tree.model, instances)
 end
 
-# Random forest (C4.5).
+# Random forest (CART).
 mutable struct RandomForest <: Learner
   model
   options
@@ -54,12 +69,14 @@ mutable struct RandomForest <: Learner
       :output => :class,
       # Options specific to this implementation.
       :impl_options => Dict(
-        # Number of features to train on with trees.
-        :num_subfeatures => nothing,
+        # Number of features to train on with trees (default: 0, keep all).
+        :num_subfeatures => 0,
         # Number of trees in forest.
         :num_trees => 10,
         # Proportion of trainingset to be used for trees.
-        :partial_sampling => 0.7
+        :partial_sampling => 0.7,
+        # Maximum depth of each decision tree (default: no maximum).
+        :max_depth => -1
       )
     )
     new(nothing, nested_dict_merge(default_options, options))
@@ -69,18 +86,14 @@ end
 function fit!(forest::RandomForest, instances::Matrix, labels::Vector)
   # Set training-dependent options
   impl_options = forest.options[:impl_options]
-  if impl_options[:num_subfeatures] == nothing
-    num_subfeatures = size(instances, 2)
-  else
-    num_subfeatures = impl_options[:num_subfeatures]
-  end
   # Build model
   forest.model = DT.build_forest(
     labels, 
     instances,
-    num_subfeatures, 
+    impl_options[:num_subfeatures],
     impl_options[:num_trees],
-    impl_options[:partial_sampling]
+    impl_options[:partial_sampling],
+    impl_options[:max_depth]
   )
 end
 
@@ -88,7 +101,7 @@ function transform!(forest::RandomForest, instances::Matrix)
   return DT.apply_forest(forest.model, instances)
 end
 
-# Adaboosted C4.5 decision stumps.
+# Adaboosted decision stumps.
 mutable struct DecisionStumpAdaboost <: Learner
   model
   options
