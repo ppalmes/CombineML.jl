@@ -254,7 +254,7 @@ transformer = Wrapper(Dict(
 
 #### PrunedTree (DecisionTree.jl Learner)
 
-Pruned ID3 decision tree.
+Pruned CART decision tree.
 ```julia
 learner = PrunedTree(Dict(
   # Output to train against
@@ -262,15 +262,23 @@ learner = PrunedTree(Dict(
   :output => :class,
   # Options specific to this implementation.
   :impl_options => Dict(
-    # Merge leaves having >= purity_threshold combined purity.
-    :purity_threshold => 1.0
+    # Merge leaves having >= purity_threshold CombineMLd purity.
+    :purity_threshold => 1.0,
+    # Maximum depth of the decision tree (default: no maximum).
+    :max_depth => -1,
+    # Minimum number of samples each leaf needs to have.
+    :min_samples_leaf => 1,
+    # Minimum number of samples in needed for a split.
+    :min_samples_split => 2,
+    # Minimum purity needed for a split.
+    :min_purity_increase => 0.0
   ) 
 ))
 ```
 
 #### RandomForest (DecisionTree.jl Learner)
 
-Random forest (C4.5).
+Random forest (CART).
 ```julia
 learner = RandomForest(Dict(
   # Output to train against
@@ -278,19 +286,22 @@ learner = RandomForest(Dict(
   :output => :class,
   # Options specific to this implementation.
   :impl_options => Dict(
-    # Number of features to train on with trees.
-    :num_subinstances => nothing,
+    # Number of features to train on with trees (default: 0, keep all).
+    # Good values are square root or log2 of total number of features, rounded.
+    :num_subinstances => 0,
     # Number of trees in forest.
     :num_trees => 10,
     # Proportion of trainingset to be used for trees.
-    :partial_sampling => 0.7
+    :partial_sampling => 0.7,
+    # Maximum depth of each decision tree (default: no maximum).
+    :max_depth => -1
   )
 ))
 ```
 
 #### DecisionStumpAdaboost (DecisionTree.jl Learner)
 
-Adaboosted C4.5 decision stumps.
+Adaboosted decision stumps.
 ```julia
 learner = DecisionStumpAdaboost(Dict(
   # Output to train against
