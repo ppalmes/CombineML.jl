@@ -132,9 +132,9 @@ function transform!(se::StackEnsemble, instances::Matrix)
 end
 
 # Build stacker instances.
-function build_stacker_instances{T<:Learner}(
+function build_stacker_instances(
   learners::Vector{T}, instances::Matrix, 
-  label_map, keep_original_features=false)
+  label_map, keep_original_features=false) where T<:Learner
 
   # Build empty stacker instance space
   num_labels = size(label_map.vs, 1)

@@ -43,7 +43,7 @@ test_dataset = [
   0.0   0 "e"  5 "e" "d";
 ]
 
-type FeatureClassification <: Classification
+mutable struct FeatureClassification <: Classification
   train_instances::Matrix
   test_instances::Matrix
   train_labels::Vector
@@ -63,7 +63,7 @@ type FeatureClassification <: Classification
   end
 end
 
-type NumericFeatureClassification <: Classification
+mutable struct NumericFeatureClassification <: Classification
   train_instances::Matrix
   test_instances::Matrix
   train_labels::Vector
@@ -90,7 +90,7 @@ function fit_and_transform!(transformer::Transformer, problem::MLProblem, seed=1
     return transform!(transformer, problem.test_instances)
 end
 
-type PerfectScoreLearner <: TestLearner
+mutable struct PerfectScoreLearner <: TestLearner
   model
   options
 
@@ -130,7 +130,7 @@ function transform!(psl::PerfectScoreLearner, instances::Matrix)
   return predictions
 end
 
-type AlwaysSameLabelLearner <: TestLearner
+mutable struct AlwaysSameLabelLearner <: TestLearner
   model
   options
 
