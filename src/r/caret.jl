@@ -17,10 +17,10 @@ export CRTLearner,
        transform!
 
 # Convert vector to R equivalent.
-vector_to_r{T<:Int}(vector::Vector{T}) = RO.IntVector(vector)
-vector_to_r{T<:Real}(vector::Vector{T}) = RO.FloatVector(vector)
-vector_to_r{T<:Bool}(vector::Vector{T}) = RO.BoolVector(vector)
-vector_to_r{T<:AbstractString}(vector::Vector{T}) = RO.StrVector(vector)
+vector_to_r(vector::Vector{T}) where {T<:Int} = RO.IntVector(vector)
+vector_to_r(vector::Vector{T}) where {T<:Real} = RO.FloatVector(vector)
+vector_to_r(vector::Vector{T}) where {T<:Bool} = RO.BoolVector(vector)
+vector_to_r(vector::Vector{T}) where {T<:AbstractString} = RO.StrVector(vector)
 function vector_to_r(vector::Vector{Any})
   vec_eltype = infer_eltype(vector)
   if vec_eltype == Any
