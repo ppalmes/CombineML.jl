@@ -87,7 +87,7 @@ predict(learner)
   Dict(
     :output => :class,
     :impl_options => Dict(
-      :num_subfeatures => nothing,
+    # :num_subfeatures => nothing,
       :num_trees => 100,
       :partial_sampling => 0.7
     )
@@ -136,8 +136,7 @@ predict(sk_learner)
           Dict(
              :output => :class,
              :impl_options => Dict(
-               :num_subfeatures => nothing,
-               :num_trees => 200,
+               :num_trees => 20,
                :partial_sampling => 0.7
              )
           )
@@ -177,7 +176,6 @@ predict(votelearner)
           Dict(
              :output => :class,
              :impl_options => Dict(
-               :num_subfeatures => nothing,
                :num_trees => 20,
                :partial_sampling => 0.7
              )
@@ -212,4 +210,4 @@ function main(trials)
     return sorted
 end
 
-res=main(5) 
+res=main(10) 
