@@ -4,11 +4,11 @@ os:
   - linux
  # - osx
 julia:
-  - 0.7
+  - 1.0
 notifications:
   email: false
-script:
-  - julia -e 'Pkg.init(); Pkg.clone(pwd())'
-  - julia --code-coverage test/runtests.jl
-after_success:
-  - julia -e 'cd(Pkg.dir("CombineML")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'
+#script:
+#  - julia -e 'Pkg.init(); Pkg.clone(pwd())'
+#  - julia --code-coverage test/runtests.jl
+#after_success:
+#  - julia -e 'cd(Pkg.dir("CombineML")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'
