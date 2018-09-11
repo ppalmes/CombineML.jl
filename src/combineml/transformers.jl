@@ -1,8 +1,11 @@
 # Transformers provided by CombineML.
 module CombineMLTransformers
 
-importall CombineML.Types
-importall CombineML.Util
+using Statistics
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 export OneHotEncoder,
        Imputer,
@@ -99,7 +102,7 @@ function find_nominal_columns(instances::Matrix)
   nominal_columns = Int[]
   for column in 1:size(instances, 2)
     col_eltype = infer_eltype(instances[:, column])
-    if !issubtype(col_eltype, Real)
+    if !<:(col_eltype, Real)
       push!(nominal_columns, column)
     end
   end
@@ -134,7 +137,7 @@ function transform!(imp::Imputer, instances::Matrix)
     column_values = instances[:, column]
     col_eltype = infer_eltype(column_values)
 
-    if issubtype(col_eltype, Real)
+    if <:(col_eltype, Real)
       na_rows = map(x -> isnan(x), column_values)
       if any(na_rows)
         fill_value = strategy(column_values[.!na_rows])

@@ -1,7 +1,11 @@
 # Various functions that work with learners.
 module Util
 
-importall CombineML.Types
+using Statistics
+using Random
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
 import MLBase: Kfold
 
 export holdout,

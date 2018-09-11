@@ -1,8 +1,10 @@
 # MLBase transformers.
 module MLBaseWrapper
 
-importall CombineML.Types
-importall CombineML.Util
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 include("standardize.jl")
 
@@ -27,16 +29,16 @@ mutable struct StandardScaler <: Transformer
   end
 end
 
-function fit!(st::StandardScaler, instances::Matrix, labels::Vector)
-  st_transform = estimate(Standardize, instances'; st.options...)
+function fit!(st::StandardScaler, features::Matrix, labels::Vector)
+  st_transform = estimate(Standardize, features'; st.options...)
   st.model = Dict(
     :standardize_transform => st_transform
   )
 end
 
-function transform!(st::StandardScaler, instances::Matrix)
+function transform!(st::StandardScaler, features::Matrix)
   st_transform = st.model[:standardize_transform]
-  transposed_instances = instances'
+  transposed_instances = features'
   return transform(st_transform, transposed_instances)'
 end
 

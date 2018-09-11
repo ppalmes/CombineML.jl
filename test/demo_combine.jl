@@ -4,11 +4,18 @@
 # http://topepo.github.io/caret/available-models.html
 # https://github.com/svs14/Orchestra.jl
 
+using Distributed
+using Random
+using Statistics
+
 addprocs()
+
 
 @everywhere import CombineML.Util
 @everywhere import CombineML.Transformers
 @everywhere import RDatasets
+@everywhere import CombineML
+
 @everywhere CU=CombineML.Util
 @everywhere CT=CombineML.Transformers
 @everywhere RD=RDatasets
@@ -19,10 +26,10 @@ subtypes(CT.Learner)
 
 @everywhere function predict(learner)
     dataset = RD.dataset("datasets", "iris")
-    instances = Array(dataset[:, 1:(end-1)])
-    labels = Array(dataset[:, end])
+    features = convert(Array,dataset[:, 1:(end-1)])
+    labels = convert(Array,dataset[:, end])
     # Split into training and test sets
-    (train_ind, test_ind) = CU.holdout(size(instances, 1), 0.3)
+    (train_ind, test_ind) = CU.holdout(size(features, 1), 0.3)
     # Create pipeline
     pipeline = CT.Pipeline(
       Dict(
@@ -30,21 +37,19 @@ subtypes(CT.Learner)
           CT.OneHotEncoder(), # Encodes nominal features into numeric
           CT.Imputer(), # Imputes NA values
           CT.StandardScaler(), # Standardizes features 
-          CT.PCA(),
+          #CT.PCA(),
           learner # Predicts labels on instances
         ]
       )
     )
     # Train
-    CT.fit!(pipeline, instances[train_ind, :], labels[train_ind]);
+    CT.fit!(pipeline, features[train_ind, :], labels[train_ind]);
     # Predict
-    predictions = CT.transform!(pipeline, instances[test_ind, :]);
+    predictions = CT.transform!(pipeline, features[test_ind, :]);
     # Assess predictions
     result = CU.score(:accuracy, labels[test_ind], predictions)
     return result
 end
-
-
 # Learner with default settings
 learner = CT.PrunedTree()
 predict(learner)
@@ -130,7 +135,7 @@ predict(sk_learner)
 
 @everywhere stacklearner = CT.StackEnsemble(Dict(
     :output => :class,
-    :learners => [sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :stacker => 
        CT.RandomForest(
           Dict(
@@ -149,7 +154,7 @@ predict(stacklearner)
 
 @everywhere bestlearner = CT.BestLearner(
   Dict(
-    :learners => [stacklearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :output => :class,
     :score_type => Real,
     :learner_options_grid => nothing
@@ -159,7 +164,7 @@ predict(bestlearner)
 
 @everywhere votelearner = CT.VoteEnsemble(
   Dict(
-    :learners => [stacklearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     :output => :class,
   )
 )
@@ -168,7 +173,7 @@ predict(votelearner)
 # All learners are called in the same way.
 @everywhere stackstacklearner = CT.StackEnsemble(
   Dict(
-    :learners => [stacklearner,bestlearner,votelearner,sk_learner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
+    :learners => [stacklearner,votelearner,CT.PrunedTree(), CT.RandomForest(),CT.DecisionStumpAdaboost(),rf], 
     #:keep_original_features => false,
     #:stacker_training_proportion => 0.3,
     :stacker => 
@@ -186,7 +191,7 @@ predict(votelearner)
 predict(stackstacklearner)
 
 
-acc=@parallel (vcat) for i=1:5
+acc=@distributed (vcat) for i=1:5
     res=predict(stacklearner)
     println(round(res))
     res
@@ -195,19 +200,20 @@ println("Acc=",round(mean(acc))," +/- ",round(std(acc)))
 
 using DataFrames
 function main(trials)
-    learners=Dict(:votelearner=>votelearner,:bestlearner=>bestlearner,:stacklearner=>stacklearner,:stackstacklearner=>stackstacklearner)
+    learners=Dict(:votelearner=>votelearner,:stacklearner=>stacklearner,:stackstacklearner=>stackstacklearner)
     models=collect(keys(learners))
-    ctable=@parallel (vcat) for model in models
-        acc=@parallel (vcat) for i=1:trials
+    ctable=@distributed (vcat) for model in models
+        acc=@distributed (vcat) for i=1:trials
             res=predict(learners[model])
             println(model," => ",round(res))
             res
         end
         [model round(mean(acc)) round(std(acc)) length(acc)]
     end
-    sorted=sortrows(ctable,by=(x)->x[2],rev=true) |> DataFrame
-    rename!(sorted,Dict(:x1=>:model,:x2=>:mean_acc,:x3=>:std_acc,:x4=>:trials))
-    return sorted
+    #sorted=sortrows(ctable,by=(x)->x[2],rev=true) |> DataFrame
+    #rename!(sorted,Dict(:x1=>:model,:x2=>:mean_acc,:x3=>:std_acc,:x4=>:trials))
+    #return sorted
+    return ctable
 end
 
 res=main(10) 

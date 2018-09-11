@@ -1,8 +1,10 @@
 # Dimensionality Reduction transformers.
 module DimensionalityReductionWrapper
 
-importall CombineML.Types
-importall CombineML.Util
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 import MultivariateStats
 import MultivariateStats: fit, transform
 

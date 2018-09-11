@@ -1,8 +1,10 @@
 # Decision trees as found in DecisionTree Julia package.
 module DecisionTreeWrapper
 
-importall CombineML.Types
-importall CombineML.Util
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 import DecisionTree
 DT = DecisionTree

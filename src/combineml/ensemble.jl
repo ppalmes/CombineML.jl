@@ -1,11 +1,15 @@
 # Ensemble learning methods.
 module EnsembleMethods
 
-importall CombineML.Types
-importall CombineML.Util
+using Statistics
+using Random
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 import StatsBase
-import Iterators: product
+import IterTools: product
 import MLBase
 
 import CombineML.Transformers.DecisionTreeWrapper: fit!, transform!

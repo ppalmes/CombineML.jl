@@ -1,8 +1,10 @@
 # Wrapper module for scikit-learn machine learners.
 module ScikitLearnWrapper
 
-importall CombineML.Types
-importall CombineML.Util
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 using PyCall
 @pyimport sklearn.ensemble as ENS

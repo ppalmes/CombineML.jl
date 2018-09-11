@@ -26,36 +26,38 @@ export Transformer,
 import CombineML.System: LIB_SKL_AVAILABLE, LIB_CRT_AVAILABLE
 
 # Include abstract types as convenience
-importall CombineML.Types
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
 
 # Include atomic CombineML transformers
 include(joinpath("combineml", "baseline.jl"))
-importall .BaselineMethods
+using .BaselineMethods
 include(joinpath("combineml", "transformers.jl"))
-importall .CombineMLTransformers
+using .CombineMLTransformers
 
 ## Include Julia transformers
 include(joinpath("julia", "decisiontree.jl"))
-importall .DecisionTreeWrapper
+using .DecisionTreeWrapper
 include(joinpath("julia", "mlbase.jl"))
-importall .MLBaseWrapper
+using .MLBaseWrapper
 include(joinpath("julia", "dimensionalityreduction.jl"))
-importall .DimensionalityReductionWrapper
+using .DimensionalityReductionWrapper
 
 # Include Python transformers
 if LIB_SKL_AVAILABLE
   include(joinpath("python", "scikit_learn.jl"))
-  importall .ScikitLearnWrapper
+  using .ScikitLearnWrapper
 end
 
 # Include R transformers
 if LIB_CRT_AVAILABLE
   include(joinpath("r", "caret.jl"))
-  importall .CaretWrapper
+  using .CaretWrapper
 end
 
 ## Include aggregate transformers last, dependent on atomic transformers
 include(joinpath("combineml", "ensemble.jl"))
-importall .EnsembleMethods
+using .EnsembleMethods
 
 end # module

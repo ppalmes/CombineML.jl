@@ -1,8 +1,10 @@
 # Wrapper to CARET library.
 module CaretWrapper
 
-importall CombineML.Types
-importall CombineML.Util
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 using PyCall
 @pyimport rpy2.robjects as RO
