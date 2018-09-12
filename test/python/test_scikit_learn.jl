@@ -4,7 +4,7 @@ include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
-using Base.Test
+using Test
 
 
 importall CombineML.Types

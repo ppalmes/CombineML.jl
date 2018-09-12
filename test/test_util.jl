@@ -1,6 +1,6 @@
 module TestUtil
 
-using Base.Test
+using Test
 
 #using FactCheck
 

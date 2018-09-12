@@ -4,7 +4,7 @@ include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
 fcp = FeatureClassification()
 
-using Base.Test
+using Test
 
 importall CombineML.Transformers.MLBaseWrapper
 

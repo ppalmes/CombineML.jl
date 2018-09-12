@@ -1,6 +1,6 @@
 module TestDimensionalityReductionWrapper
 
-using Base.Test
+using Test
 import MultivariateStats: reconstruct
 importall CombineML.Transformers.DimensionalityReductionWrapper
 
