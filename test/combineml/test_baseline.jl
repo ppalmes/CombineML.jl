@@ -8,7 +8,7 @@ nfcp = NumericFeatureClassification()
 using FactCheck
 
 
-importall CombineML.Transformers.BaselineMethods
+using CombineML.Transformers.BaselineMethods
 
 facts("Baseline transformers") do
   context("Baseline learner does simple transforms") do

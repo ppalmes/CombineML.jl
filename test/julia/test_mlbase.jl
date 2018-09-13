@@ -6,12 +6,12 @@ fcp = FeatureClassification()
 
 using Test
 
-importall CombineML.Transformers.MLBaseWrapper
+using CombineML.Transformers.MLBaseWrapper
 
 @testset "MLBase transformers" begin
 
   @testset "StandardScaler transforms features" begin
-    instances = [
+    features = [
       5 10;
       -5 0;
       0 5;
@@ -27,8 +27,8 @@ importall CombineML.Transformers.MLBaseWrapper
       0.0 0.0;
     ]
     standard_scaler = StandardScaler()
-    fit!(standard_scaler, instances, labels)
-    transformed = transform!(standard_scaler, instances)
+    fit!(standard_scaler, features, labels)
+    transformed = transform!(standard_scaler, features)
     @test transformed == expected_transformed
   end
 

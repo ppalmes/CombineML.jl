@@ -7,8 +7,10 @@ nfcp = NumericFeatureClassification()
 using Test
 
 using MLBase
-importall CombineML.Types
-importall CombineML.Transformers.CaretWrapper
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Transformers.CaretWrapper
 CW = CaretWrapper
 using PyCall
 @pyimport rpy2.robjects as RO

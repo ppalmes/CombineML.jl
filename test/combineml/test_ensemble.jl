@@ -4,9 +4,10 @@ include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
-using Base.Test
+using Test
+using Random
 
-importall CombineML.Transformers.EnsembleMethods
+using CombineML.Transformers.EnsembleMethods
 import CombineML.Transformers.DecisionTreeWrapper: fit!, transform!
 import CombineML.Transformers.DecisionTreeWrapper: PrunedTree
 import CombineML.Transformers.DecisionTreeWrapper: RandomForest
@@ -15,8 +16,8 @@ import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
 @testset "Ensemble learners" begin
 
   @testset "VoteEnsemble predicts according to majority" begin
-    always_a_options = Dict( :label => "a" )
-    always_b_options = Dict( :label => "b" ) 
+    always_a_options = Dict( :label => :a )
+    always_b_options = Dict( :label => :b ) 
     learner = VoteEnsemble(Dict(
       :learners => [
         AlwaysSameLabelLearner(always_a_options),
@@ -26,13 +27,13 @@ import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
      ))
     fit!(learner, nfcp.train_instances, nfcp.train_labels)
     predictions = transform!(learner, nfcp.test_instances)
-    expected_predictions = fill("a", size(nfcp.test_instances, 1))
+    expected_predictions = fill(:a, size(nfcp.test_instances, 1))
     @test  predictions == expected_predictions
   end
 
 #  @testset "StackEnsemble predicts with CombineMLd learners" begin
 #    # Fix random seed, due to stochasticity in stacker.
-#    srand(2)
+#    Random.seed!(2)
 #    always_a_options = Dict( :label => "a" )
 #    learner = StackEnsemble(Dict(
 #      :learners => [
@@ -45,7 +46,6 @@ import CombineML.Transformers.DecisionTreeWrapper: DecisionStumpAdaboost
 #    fit!(learner, nfcp.train_instances, nfcp.train_labels)
 #    predictions = transform!(learner, nfcp.test_instances)
 #    unexpected_predictions = fill("a", size(nfcp.test_instances, 1))
-#
 #    @test predictions == not(unexpected_predictions)
 #  end
 

@@ -4,7 +4,7 @@ using Test
 
 #using FactCheck
 
-importall CombineML.Util
+using CombineML.Util
 
 include("fixture_learners.jl")
 using .FixtureLearners

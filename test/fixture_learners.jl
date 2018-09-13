@@ -1,7 +1,10 @@
 module FixtureLearners
 
-importall CombineML.Types
-importall CombineML.Util
+using Random
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Util
 
 export MLProblem,
 Classification,
@@ -85,10 +88,18 @@ end
 
 
 function fit_and_transform!(transformer::Transformer, problem::MLProblem, seed=1)
-    srand(seed)
+    Random.seed!(seed)
     fit!(transformer, problem.train_instances, problem.train_labels)
     return transform!(transformer, problem.test_instances)
 end
+
+function fit_and_transform!(transformer::Transformer, problem::Classification, seed=1)
+    Random.seed!(seed)
+    fit!(transformer, problem.train_instances, problem.train_labels)
+    return transform!(transformer, problem.test_instances)
+end
+
+
 
 mutable struct PerfectScoreLearner <: TestLearner
   model

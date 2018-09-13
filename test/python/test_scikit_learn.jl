@@ -7,8 +7,10 @@ nfcp = NumericFeatureClassification()
 using Test
 
 
-importall CombineML.Types
-importall CombineML.Transformers.ScikitLearnWrapper
+using CombineML.Types
+import CombineML.Types.fit!
+import CombineML.Types.transform!
+using CombineML.Transformers.ScikitLearnWrapper
 using PyCall
 @pyimport sklearn.neighbors as NN
 @pyimport random as RAN

@@ -2,7 +2,7 @@ module TestDimensionalityReductionWrapper
 
 using Test
 import MultivariateStats: reconstruct
-importall CombineML.Transformers.DimensionalityReductionWrapper
+using CombineML.Transformers.DimensionalityReductionWrapper
 
 #include(joinpath("..", "fixture_learners.jl"))
 #using .FixtureLearners

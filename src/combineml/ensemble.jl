@@ -181,7 +181,7 @@ mutable struct BestLearner <: Learner
       :partition_generator => (instances, labels) -> kfold(size(instances, 1), 5),
       # Function that selects the best learner by index.
       # Arg learner_partition_scores is a (learner, partition) score matrix.
-      :selection_function => (learner_partition_scores) -> findmax(mean(learner_partition_scores, 2))[2],      
+      :selection_function => (learner_partition_scores) -> findmax(mean(learner_partition_scores, dims=2))[2],      
       # Score type returned by score() using respective output.
       :score_type => Real,
       # Candidate learners.
@@ -242,7 +242,7 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
   num_learners = size(learners, 1)
   num_instances = size(instances, 1)
   score_type = bls.options[:score_type]
-  learner_partition_scores = Array{score_type}(num_learners, num_partitions)
+  learner_partition_scores = Array{score_type}(undef,num_learners, num_partitions)
   for l_index = 1:num_learners, p_index = 1:num_partitions
     partition = partitions[p_index]
     rest = setdiff(1:num_instances, partition)

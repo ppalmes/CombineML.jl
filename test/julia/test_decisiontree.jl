@@ -5,8 +5,8 @@ using .FixtureLearners
 nfcp = NumericFeatureClassification()
 
 using Test
-
-importall CombineML.Transformers.DecisionTreeWrapper
+using Random
+using CombineML.Transformers.DecisionTreeWrapper
 using DecisionTree
 
 @testset "DecisionTree learners" begin
@@ -16,7 +16,7 @@ using DecisionTree
     learner = PrunedTree()
     combineml_predictions = fit_and_transform!(learner, nfcp)
     # Predict with original backend learner
-    srand(1)
+    Random.seed!(1)
     model = build_tree(
       nfcp.train_labels,
       nfcp.train_instances,
@@ -37,7 +37,7 @@ using DecisionTree
     learner = RandomForest()
     combineml_predictions = fit_and_transform!(learner, nfcp)
     # Predict with original backend learner
-    srand(1)
+    Random.seed!(1)
     model = build_forest(
       nfcp.train_labels,
       nfcp.train_instances,
@@ -56,7 +56,7 @@ using DecisionTree
     learner = DecisionStumpAdaboost()
     combineml_predictions = fit_and_transform!(learner, nfcp)
     # Predict with original backend learner
-    srand(1)
+    Random.seed!(1)
     model, coeffs = build_adaboost_stumps(
       nfcp.train_labels,
       nfcp.train_instances,

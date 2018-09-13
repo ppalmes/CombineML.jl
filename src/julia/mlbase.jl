@@ -30,7 +30,7 @@ mutable struct StandardScaler <: Transformer
 end
 
 function fit!(st::StandardScaler, features::Matrix, labels::Vector)
-  st_transform = estimate(Standardize, features'; st.options...)
+  st_transform = estimate(Standardize, Array(features'); st.options...)
   st.model = Dict(
     :standardize_transform => st_transform
   )
@@ -38,8 +38,8 @@ end
 
 function transform!(st::StandardScaler, features::Matrix)
   st_transform = st.model[:standardize_transform]
-  transposed_instances = features'
-  return transform(st_transform, transposed_instances)'
+  transposed_instances = Array(features')
+  return Array(transform(st_transform, transposed_instances)')
 end
 
 end # module

@@ -77,7 +77,7 @@ function transform!(ohe::OneHotEncoder, instances::Matrix)
       col_values = nominal_column_values_map[column]
       for row in 1:size(instances, 1)
         entry_value = instances[row, column]
-        entry_value_index = findfirst(col_values, entry_value)
+        entry_value_index = findfirst(isequal(entry_value),col_values)
         if entry_value_index == 0
           warn("Unseen value found in OneHotEncoder,
                 for entry ($row, $column) = $(entry_value). 
@@ -141,7 +141,7 @@ function transform!(imp::Imputer, instances::Matrix)
       na_rows = map(x -> isnan(x), column_values)
       if any(na_rows)
         fill_value = strategy(column_values[.!na_rows])
-        new_instances[na_rows, column] = fill_value
+        new_instances[na_rows, column] .= fill_value
       end
     end
   end

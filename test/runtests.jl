@@ -12,12 +12,12 @@ module TestRunner
   if LIB_SKL_AVAILABLE
     include(joinpath("python", "test_scikit_learn.jl"))
   else
-    info("Skipping scikit-learn tests.")
+    @info("Skipping scikit-learn tests.")
   end
   if LIB_CRT_AVAILABLE
     include(joinpath("r", "test_caret.jl"))
   else
-    info("Skipping CARET tests.")
+    @info("Skipping CARET tests.")
   end
   include("test_system.jl")
 end # module

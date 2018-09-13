@@ -1,5 +1,7 @@
 module MStandardize
 
+using LinearAlgebra
+
 export Standardize
 
 export standardize, standardize!, transform
@@ -104,8 +106,8 @@ end
 transform!(t::Standardize, x::DenseArray{T,1}) where {T<:AbstractFloat} = transform!(x, t, x)
 transform!(t::Standardize, x::DenseArray{T,2}) where {T<:AbstractFloat} = transform!(x, t, x)
 
-transform(t::Standardize, x::DenseArray{T,1}) where {T<:Real} = transform!(Array{Float64}(size(x)), t, x)
-transform(t::Standardize, x::DenseArray{T,2}) where {T<:Real} = transform!(Array{Float64}(size(x)), t, x)
+transform(t::Standardize, x::DenseArray{T,1}) where {T<:Real} = transform!(Array{Float64}(undef,size(x)), t, x)
+transform(t::Standardize, x::DenseArray{T,2}) where {T<:Real} = transform!(Array{Float64}(undef,size(x)), t, x)
 
 # estimate a standardize transform
 
@@ -113,8 +115,8 @@ function estimate(::Type{Standardize}, X::DenseArray{T,2}; center::Bool=true, sc
     d, n = size(X)
     n >= 2 || error("X must contain at least two columns.")
 
-    m = Array{Float64}(ifelse(center, d, 0))
-    s = Array{Float64}(ifelse(scale, d, 0))
+    m = Array{Float64}(undef,ifelse(center, d, 0))
+    s = Array{Float64}(undef,ifelse(scale, d, 0))
 
     if center
         fill!(m, 0.0)
@@ -124,7 +126,7 @@ function estimate(::Type{Standardize}, X::DenseArray{T,2}; center::Bool=true, sc
                 @inbounds m[i] += xj[i]
             end
         end
-        scale!(m, 1.0 / n)
+        rmul!(m, 1.0 / n)
     end
 
     if scale
