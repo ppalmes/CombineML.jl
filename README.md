@@ -8,7 +8,7 @@ The CombineML.jl package is licensed under the MIT "Expat" License:
 
 [![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Julia 0.6 on Linux: [![Build Status](https://travis-ci.org/ppalmes/CombineML.jl.svg?branch=master)](https://travis-ci.org/ppalmes/CombineML.jl)
+Julia 1.0 on Linux: [![Build Status](https://travis-ci.org/ppalmes/CombineML.jl.svg?branch=master)](https://travis-ci.org/ppalmes/CombineML.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ppalmes/CombineML.jl/badge.svg?branch=master)](https://coveralls.io/github/ppalmes/CombineML.jl?branch=master)
 
 CombineML is a heterogeneous ensemble learning package for the Julia programming
