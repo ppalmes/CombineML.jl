@@ -6,3 +6,4 @@ PyCall 1.10
 MultivariateStats 0.6.0
 IterTools 1.0.0
 ArrayViews 0.6
+LinearAlgebra
