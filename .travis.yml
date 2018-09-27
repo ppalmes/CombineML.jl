@@ -6,6 +6,10 @@ os:
 julia:
   - 0.7
   - 1.0
+env:
+  matrix:
+    - PYTHON=python  # python 2.7
+    - PYTHON=python3 # python 3.5
 notifications:
   email: false
 #script:
