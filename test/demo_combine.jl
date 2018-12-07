@@ -5,11 +5,12 @@
 # https://github.com/svs14/Orchestra.jl
 
 using Distributed
-using Random
-using Statistics
 
 addprocs()
 
+
+@everywhere using Random
+@everywhere using Statistics
 
 @everywhere import CombineML.Util
 @everywhere import CombineML.Transformers
@@ -210,10 +211,9 @@ function main(trials)
         end
         [model round(mean(acc)) round(std(acc)) length(acc)]
     end
-    #sorted=sortrows(ctable,by=(x)->x[2],rev=true) |> DataFrame
-    #rename!(sorted,Dict(:x1=>:model,:x2=>:mean_acc,:x3=>:std_acc,:x4=>:trials))
-    #return sorted
-    return ctable
+    sorted=sort(DataFrame(ctable),:x2,rev=true)
+    rename!(sorted,Dict(:x1=>:model,:x2=>:mean_acc,:x3=>:std_acc,:x4=>:trials))
+    return sorted
 end
 
 res=main(10) 
