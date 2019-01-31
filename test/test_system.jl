@@ -1,7 +1,9 @@
 # System tests.
 module TestSystem
 
-using DelimitedFiles
+using DataFrames
+using RDatasets
+#using DelimitedFiles
 import CombineML
 using InteractiveUtils
 using CombineML.Types
@@ -45,14 +47,17 @@ concrete_learner_types = setdiff(
 
   @testset "All learners train and predict on iris dataset." begin
     # Get data
-    mdataset = readdlm(joinpath(dirname(pathof(CombineML)),"../test", "iris.csv"),',')
+    #mdataset = readdlm(joinpath(dirname(pathof(CombineML)),"../test", "iris.csv"),',')
+    mdataset = dataset("datasets","iris")
     features = mdataset[:,1:(end-1)]
     labels = mdataset[:, end]
     (train_ind, test_ind) = holdout(size(features, 1), 0.3)
-    train_features = features[train_ind, :]
-    test_features = features[test_ind, :]
-    train_labels = labels[train_ind]
-    test_labels = labels[test_ind]
+    train_features = features[train_ind, :] |> Matrix
+    test_features = features[test_ind, :] |> Matrix
+    train_labels = labels[train_ind] |> Vector
+    test_labels = labels[test_ind] |> Vector
+    m = CRTLearner()
+    fit!(m,train_features,train_labels)
     # Test all learners
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()

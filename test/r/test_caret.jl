@@ -1,4 +1,6 @@
 module TestCaretWrapper
+using Random
+using DataFrames
 
 include(joinpath("..", "fixture_learners.jl"))
 using .FixtureLearners
@@ -12,86 +14,68 @@ import CombineML.Types.fit!
 import CombineML.Types.transform!
 using CombineML.Transformers.CaretWrapper
 CW = CaretWrapper
-using PyCall
-@pyimport rpy2.robjects as RO
-@pyimport rpy2.robjects.packages as RP
-@pyimport rpy2.robjects.numpy2ri as N2R
-N2R.activate()
-RP.importr("caret")
+
+using RCall
+R"library(caret)"
+R"library(e1071)"
+R"library(gam)"
+R"library(randomForest)"
+R"library(nnet)"
+R"library(kernlab)"
+R"library(grid)"
+
+
 
 function behavior_check(caret_learner::String, impl_options=Dict())
   # Predict with CombineML learner
-  srand(1)
-  pycall(RO.r["set.seed"], PyObject, 1)
-  learner = CRTLearner({
-    :learner => caret_learner, 
-    :impl_options => impl_options
-  })
+  Random.seed!(1)
+  R"set.seed(1)"
+  learner = CRTLearner(Dict(
+                        :learner => caret_learner, 
+                        :fitControl=>"trainControl(method='cv')",
+                        :impl_options => impl_options
+                       ))
   combineml_predictions = fit_and_transform!(learner, nfcp)
 
-  # Predict with backend learner
-  srand(1)
-  pycall(RO.r["set.seed"], PyObject, 1)
-  (r_dataset_df, label_factors) = CW.dataset_to_r_dataframe(
-    nfcp.train_instances, nfcp.train_labels
-  )
-  label_factors = collect(label_factors)
-  caret_formula = RO.Formula("Y ~ .")
-  r_fit_control = pycall(RO.r[:trainControl], PyObject,
-    method = "none"
-  )
-  if isempty(impl_options)
-    r_model = pycall(RO.r[:train], PyObject,
-      caret_formula,
-      method = caret_learner,
-      data = r_dataset_df,
-      trControl = r_fit_control,
-      tuneLength = 1
-    )
-  else
-    r_model = pycall(RO.r[:train], PyObject,
-      caret_formula,
-      method = caret_learner,
-      data = r_dataset_df,
-      trControl = r_fit_control,
-      tuneGrid = RO.DataFrame(impl_options)
-    )
-  end
-  (r_instance_df, _) = CW.dataset_to_r_dataframe(nfcp.test_instances)
-  original_predictions = collect(pycall(RO.r[:predict], PyObject,
-    r_model,
-    newdata = r_instance_df
-  ))
-  original_predictions = map(x -> label_factors[x], original_predictions)
 
-  # Verify same predictions
+  # Predict with backend learner
+  Random.seed!(1)
+  R"set.seed(1)"
+  xtr=nfcp.train_instances |> DataFrame
+  xts=nfcp.test_instances |> DataFrame
+  yy =  nfcp.train_labels
+  fcontrol=R"trainControl(method='none')"
+  mdl = rcall(:train,xtr,yy,method=caret_learner,trControl=fcontrol)
+  original_predictions = rcopy(rcall(:predict,mdl,xts)) # extract robject
+
+  ## Verify same predictions
   @test combineml_predictions == original_predictions
 end
 
 @testset "CARET learners" begin
   @testset "CRTLearner gives same results as its backend" begin
-    caret_learners = ["svmLinear", "nnet", "earth"]
+    caret_learners = ["rf"] #,"svmLinear", "nnet", "earth"]
     for caret_learner in caret_learners
       behavior_check(caret_learner)
     end
   end
   @testset "CRTLearner with options gives same results as its backend" begin
-    behavior_check("svmLinear", {:C => 5.0})
+    behavior_check("rf", Dict(:ntree=>200))
   end
-
-  @testset "CRTLearner throws on incompatible feature" begin
-    instances = {
-      1 "a";
-      2 3;
-    }
-    labels = [
-      "a";
-      "b";
-    ]
-
-    learner = CRTLearner()
-    #@fact_throws fit!(learner, instances, labels)
-  end
+#
+#  @testset "CRTLearner throws on incompatible feature" begin
+#    instances = [
+#                 1 "a";
+#                 2 3;
+#                ]
+#    labels = [
+#              "a";
+#              "b";
+#             ]
+#
+#    learner = CRTLearner(Dict(:learner=>"rf"))
+#    @fact_throws fit!(learner, instances, labels)
+#  end
 end
 
 end # module

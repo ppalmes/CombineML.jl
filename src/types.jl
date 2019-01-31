@@ -23,7 +23,7 @@ abstract type TestLearner <: Learner end
 # @param transformer Target transformer.
 # @param instances Training instances.
 # @param labels Training labels.
-function fit!(transformer::Transformer, instances::Matrix, labels::Vector)
+function fit!(transformer::Transformer, instances::T, labels::Vector) where {T <: Union{Matrix,Vector}}
   error(typeof(transformer), " does not implement fit!")
 end
 
@@ -32,7 +32,7 @@ end
 # @param transformer Target transformer.
 # @param instances Original instances.
 # @return Transformed instances.
-function transform!(transformer::Transformer, instances::Matrix)
+function transform!(transformer::Transformer, instances::T) where {T <: Union{Matrix,Vector}}
   error(typeof(transformer), " does not implement transform!")
 end
 

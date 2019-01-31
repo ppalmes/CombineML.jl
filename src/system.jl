@@ -1,6 +1,8 @@
 # System module.
 module System
 
+using RCall
+
 import PyCall: pyimport, pycall
 
 export LIB_SKL_AVAILABLE,
@@ -19,7 +21,7 @@ end
 function check_r_dep(package::AbstractString)
   is_available = true
   try
-    pycall(pyimport("rpy2.robjects.packages")["importr"], Any, package)
+    R"library(caret)"
   catch
     is_available = false
   end
@@ -29,6 +31,4 @@ end
 # Check system for python dependencies.
 LIB_SKL_AVAILABLE = check_py_dep("sklearn")
 LIB_CRT_AVAILABLE = check_r_dep("caret")
-#LIB_CRT_AVAILABLE = false
-
 end # module
