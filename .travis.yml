@@ -16,8 +16,6 @@ env:
 notifications:
   email: false
 
-language: r
-r: caret
 
 before_install:
   # linux
@@ -25,7 +23,10 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y "deb http://cran.rstudio.com/bin/linux/ubuntu $(lsb_release -s -c)/"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq -y; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install git r-base r-base-dev r-recommended -y; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo R -e "install.packages('caret',repos='https://cloud.r-project.org')"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --install-suggests python-sklearn -y; fi
+
+ 
  
   # osx
   # faster than using homebrew/science tap
