@@ -4,6 +4,7 @@ authors = ["Paulito Palmes <ppalmes@gmail.com>"]
 version = "1.1.2"
 
 [deps]
+Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DecisionTree = "7806a523-6efd-50cb-b5f6-3fa6f1930dbb"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"

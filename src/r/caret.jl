@@ -18,6 +18,10 @@ R"library(randomForest)"
 R"library(nnet)"
 R"library(kernlab)"
 R"library(grid)"
+R"library(MASS)"
+R"library(pls)"
+R"library(xgboost)"
+
 
 export CRTLearner,
        fit!,

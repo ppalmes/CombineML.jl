@@ -11,17 +11,17 @@ using CombineML.Util
 
 using PyCall
 
-@pyimport sklearn.ensemble as ENS
-@pyimport sklearn.linear_model as LM
-@pyimport sklearn.discriminant_analysis as DA
-@pyimport sklearn.neighbors as NN
-@pyimport sklearn.svm as SVM
-@pyimport sklearn.tree as TREE
-@pyimport sklearn.neural_network as ANN
-@pyimport sklearn.gaussian_process as GP
-@pyimport sklearn.kernel_ridge as KR
-@pyimport sklearn.naive_bayes as NB
-@pyimport sklearn.isotonic as ISO
+const ENS=pyimport("sklearn.ensemble")
+const LM=pyimport("sklearn.linear_model")
+const DA=pyimport("sklearn.discriminant_analysis")
+const NN=pyimport("sklearn.neighbors")
+const SVM=pyimport("sklearn.svm")
+const TREE=pyimport("sklearn.tree")
+const ANN=pyimport("sklearn.neural_network")
+const GP=pyimport("sklearn.gaussian_process")
+const KR=pyimport("sklearn.kernel_ridge")
+const NB=pyimport("sklearn.naive_bayes")
+const ISO=pyimport("sklearn.isotonic")
 
 
 export SKLLearner,
@@ -33,10 +33,12 @@ learner_dict = Dict(
   "AdaBoostClassifier" => ENS.AdaBoostClassifier,
   "BaggingClassifier" => ENS.BaggingClassifier,
   "ExtraTreesClassifier" => ENS.ExtraTreesClassifier,
+  "VotingClassifier" => ENS.VotingClassifier,
   "GradientBoostingClassifier" => ENS.GradientBoostingClassifier,
   "RandomForestClassifier" => ENS.RandomForestClassifier,
   "LDA" => DA.LinearDiscriminantAnalysis,
   "QDA" => DA.QuadraticDiscriminantAnalysis,
+  "LogisticRegression" => LM.LogisticRegression,
   "PassiveAggressiveClassifier" => LM.PassiveAggressiveClassifier,
   "RidgeClassifier" => LM.RidgeClassifier,
   "RidgeClassifierCV" => LM.RidgeClassifierCV,
@@ -50,7 +52,6 @@ learner_dict = Dict(
   "MLPClassifier" => ANN.MLPClassifier,
   "GaussianProcessClassifier" => GP.GaussianProcessClassifier,
   "DecisionTreeClassifier" => TREE.DecisionTreeClassifier,
-  #"VotingClassifier" => ENS.VotingClassifier,
   "GaussianNB" => NB.GaussianNB,
   "MultinomialNB" => NB.MultinomialNB,
   "ComplementNB" => NB.ComplementNB,
@@ -64,7 +65,6 @@ learner_dict = Dict(
   "LassoLars" => LM.LassoLars,
   "OrthogonalMatchingPursuit" => LM.OrthogonalMatchingPursuit,
   "BayesianRidge" => LM.BayesianRidge,
-  "LogisticRegression" => LM.LogisticRegression,
   "ARDRegression" => LM.ARDRegression,
   "SGDRegressor" => LM.SGDRegressor,
   "PassiveAggressiveRegressor" => LM.PassiveAggressiveRegressor,
@@ -140,11 +140,11 @@ function fit!(sklw::SKLLearner, instances::T, labels::Vector) where {T <: Union{
 
   # Train
   sklw.model = py_learner(;impl_options...)
-  sklw.model[:fit](instances, labels)
+  sklw.model.fit(instances, labels)
 end
 
 function transform!(sklw::SKLLearner, instances::T) where {T <: Union{Matrix,Vector}}
-  return collect(sklw.model[:predict](instances))
+  return collect(sklw.model.predict(instances))
 end
 
 function skkrun()
