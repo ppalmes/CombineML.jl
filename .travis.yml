@@ -11,9 +11,8 @@ matrix:
     - julia: nightly
 env:
   matrix:
-    - PYTHON=python  # python 2.7
-    - PYTHON=python3 # python 3.5
-    - ENV["PYTHON"]=""
+    - CONDA_JL_VERSION="2" PYTHON=""
+    - CONDA_JL_VERSION="3" PYTHON=""
 notifications:
   email: false
 
@@ -25,7 +24,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update -qq -y; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install git r-base r-base-dev r-recommended -y; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo R -e "install.packages('caret',repos='https://cloud.r-project.org')"; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install python-sklearn -y; fi
+  #- if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install python-sklearn -y; fi
 
  
  
