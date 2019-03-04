@@ -11,10 +11,10 @@ using CombineML.System
 using CombineML.Transformers
 
 if LIB_SKL_AVAILABLE
-  using CombineML.Transformers.CaretWrapper
+  using CombineML.Transformers.ScikitLearnWrapper
 end
 if LIB_CRT_AVAILABLE
-  using CombineML.Transformers.ScikitLearnWrapper
+  using CombineML.Transformers.CaretWrapper
 end
  
 
