@@ -9,8 +9,15 @@ using InteractiveUtils
 using CombineML.Types
 using CombineML.System
 using CombineML.Transformers
-using CombineML.Transformers.CaretWrapper
-using CombineML.Transformers.ScikitLearnWrapper
+
+if LIB_SKL_AVAILABLE
+  using CombineML.Transformers.CaretWrapper
+end
+if LIB_CRT_AVAILABLE
+  using CombineML.Transformers.ScikitLearnWrapper
+end
+ 
+
 using CombineML.Util
 using Test
 
