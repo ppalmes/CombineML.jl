@@ -28,17 +28,30 @@ A tabular dataset will be used to obtain our features and labels.
 This will be split it into a training and test set using holdout method.
 
 ```julia
-import RDatasets
+import CombineML
 using CombineML.Util
 using CombineML.Transformers
 
+try
+  import RDatasets
+catch
+  using Pkg
+  Pkg.add("RDatasets")
+  import RDatasets
+end
+
+# use shorter module names
+CU=CombineML.Util
+CT=CombineML.Transformers
+RD=RDatasets
+
 # Obtain features and labels
-dataset = RDatasets.dataset("datasets", "iris")
-features = Array(dataset[:, 1:(end-1)])
-labels = Array(dataset[:, end])
+dataset = RD.dataset("datasets", "iris")
+features = convert(Matrix,dataset[:, 1:(end-1)])
+labels = convert(Array,dataset[:, end])
 
 # Split into training and test sets
-(train_ind, test_ind) = holdout(size(features, 1), 0.3)
+(train_ind, test_ind) = CU.holdout(size(features, 1), 0.3)
 ```
 
 ### Create a Learner
@@ -51,23 +64,23 @@ All transformers, including learners are called in the same way.
 
 ```julia
 # Learner with default settings
-learner = PrunedTree()
+learner = CT.PrunedTree()
 
 # Learner with some of the default settings overriden
-learner = PrunedTree(Dict(
+learner = CT.PrunedTree(Dict(
   :impl_options => Dict(
-    :purity_threshold => 0.5
+    :purity_threshold => 1.0
   )
 ))
 
 # All learners are called in the same way.
-learner = StackEnsemble(Dict(
+learner = CT.StackEnsemble(Dict(
   :learners => [
-    PrunedTree(), 
-    RandomForest(),
-    DecisionStumpAdaboost()
+    CT.PrunedTree(), 
+    CT.RandomForest(),
+    CT.DecisionStumpAdaboost()
   ], 
-  :stacker => RandomForest()
+  :stacker => CT.RandomForest()
 ))
 ```
 
@@ -81,12 +94,11 @@ In this case we shall one hot encode categorical features, impute NA values and 
 
 ```julia
 # Create pipeline
-pipeline = Pipeline(Dict(
+pipeline = CT.Pipeline(Dict(
   :transformers => [
-    OneHotEncoder(), # Encodes nominal features into numeric
-    Imputer(), # Imputes NA values
-    StandardScaler(), # Standardizes features 
-    PCA(),
+    CT.OneHotEncoder(), # Encodes nominal features into numeric
+    CT.Imputer(), # Imputes NA values
+    CT.StandardScaler(), # Standardizes features 
     learner # Predicts labels on features
   ]
 ))
@@ -100,10 +112,10 @@ All transformers, provide these two functions. They are always called the same w
 
 ```julia
 # Train
-fit!(pipeline, features[train_ind, :], labels[train_ind])
+CT.fit!(pipeline, features[train_ind, :], labels[train_ind])
 
 # Predict
-predictions = transform!(pipeline, features[test_ind, :])
+predictions = CT.transform!(pipeline, features[test_ind, :])
 ```
 
 ### Assess
@@ -112,7 +124,7 @@ Finally we assess how well our learner performed.
 
 ```julia
 # Assess predictions
-result = score(:accuracy, labels[test_ind], predictions)
+result = CU.score(:accuracy, labels[test_ind], predictions)
 ```
 
 ## Available Transformers
@@ -125,7 +137,7 @@ Outlined are all the transformers currently available via CombineML.
 
 Baseline learner that by default assigns the most frequent label.
 ```julia
-learner = Baseline(Dict(
+learner = CT.Baseline(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -139,19 +151,19 @@ learner = Baseline(Dict(
 
 Identity transformer passes the features as is.
 ```julia
-transformer = Identity()
+transformer = CT.Identity()
 ```
 
 #### VoteEnsemble (CombineML.jl Learner)
 
 Set of machine learners that majority vote to decide prediction.
 ```julia
-learner = VoteEnsemble(Dict(
+learner = CT.VoteEnsemble(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Learners in voting committee.
-  :learners => [PrunedTree(), DecisionStumpAdaboost(), RandomForest()]
+  :learners => [CT.PrunedTree(), CT.DecisionStumpAdaboost(), CT.RandomForest()]
 ))
 ```
 
@@ -159,14 +171,14 @@ learner = VoteEnsemble(Dict(
 
 Ensemble where a 'stack' learner learns on a set of learners' predictions.
 ```julia
-learner = StackEnsemble(Dict(
+learner = CT.StackEnsemble(Dict(
   # Output to train against
   # (:class).
   :output => :class,
   # Set of learners that produce feature space for stacker.
-  :learners => [PrunedTree(), DecisionStumpAdaboost(), RandomForest()],
+  :learners => [CT.PrunedTree(), CT.DecisionStumpAdaboost(), CT.RandomForest()],
   # Machine learner that trains on set of learners' outputs.
-  :stacker => RandomForest(),
+  :stacker => CT.RandomForest(),
   # Proportion of training set left to train stacker itself.
   :stacker_training_proportion => 0.3,
   # Provide original features on top of learner outputs to stacker.
@@ -179,7 +191,7 @@ learner = StackEnsemble(Dict(
 Selects best learner out of set. 
 Will perform a grid search on learners if options grid is provided.
 ```julia
-learner = BestLearner(Dict(
+learner = CT.BestLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -191,7 +203,7 @@ learner = BestLearner(Dict(
   # Score type returned by score() using respective output.
   :score_type => Real,
   # Candidate learners.
-  :learners => [PrunedTree(), DecisionStumpAdaboost(), RandomForest()],
+  :learners => [CT.PrunedTree(), CT.DecisionStumpAdaboost(), CT.RandomForest()],
   # Options grid for learners, to search through by BestLearner.
   # Format is [learner_1_options, learner_2_options, ...]
   # where learner_options is same as a learner's options but
@@ -205,7 +217,7 @@ learner = BestLearner(Dict(
 Transforms nominal features into one-hot form 
 and coerces the instance matrix to be of element type Float64.
 ```julia
-transformer = OneHotEncoder(Dict(
+transformer = CT.OneHotEncoder(Dict(
   # Nominal columns
   :nominal_columns => nothing,
   # Nominal column values map. Key is column index, value is list of
@@ -218,7 +230,7 @@ transformer = OneHotEncoder(Dict(
 
 Imputes NaN values from Float64 features.
 ```julia
-transformer = Imputer(Dict(
+transformer = CT.Imputer(Dict(
   # Imputation strategy.
   # Statistic that takes a vector such as mean or median.
   :strategy => mean
@@ -229,9 +241,9 @@ transformer = Imputer(Dict(
 
 Chains multiple transformers in sequence.
 ```julia
-transformer = Pipeline(Dict(
+transformer = CT.Pipeline(Dict(
   # Transformers as list to chain in sequence.
-  :transformers => [OneHotEncoder(), Imputer()],
+  :transformers => [CT.OneHotEncoder(), CT.Imputer()],
   # Transformer options as list applied to same index transformer.
   :transformer_options => nothing
 ))
@@ -243,7 +255,7 @@ Wraps around an CombineML transformer.
 ```julia
 transformer = Wrapper(Dict(
   # Transformer to call.
-  :transformer => OneHotEncoder(),
+  :transformer => CT.OneHotEncoder(),
   # Transformer options.
   :transformer_options => nothing
 ))
@@ -256,7 +268,7 @@ transformer = Wrapper(Dict(
 
 Pruned CART decision tree.
 ```julia
-learner = PrunedTree(Dict(
+learner = CT.PrunedTree(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -280,7 +292,7 @@ learner = PrunedTree(Dict(
 
 Random forest (CART).
 ```julia
-learner = RandomForest(Dict(
+learner = CT.RandomForest(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -288,7 +300,6 @@ learner = RandomForest(Dict(
   :impl_options => Dict(
     # Number of features to train on with trees (default: 0, keep all).
     # Good values are square root or log2 of total number of features, rounded.
-    :num_subfeatures => 0,
     # Number of trees in forest.
     :num_trees => 10,
     # Proportion of trainingset to be used for trees.
@@ -303,7 +314,7 @@ learner = RandomForest(Dict(
 
 Adaboosted decision stumps.
 ```julia
-learner = DecisionStumpAdaboost(Dict(
+learner = CT.DecisionStumpAdaboost(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -323,7 +334,7 @@ Features ordered by maximal variance descending.
 
 Fails if zero-variance feature exists. Based on MultivariateStats PCA
 ```julia
-transformer = PCA(Dict(
+transformer = CT.PCA(Dict(
   :pratio => 1.0,
   :maxoutdim => 5
 ))
@@ -334,7 +345,7 @@ transformer = PCA(Dict(
 Standardizes each feature using (X - mean) / stddev.
 Will produce NaN if standard deviation is zero.
 ```julia
-transformer = StandardScaler(Dict(
+transformer = CT.StandardScaler(Dict(
   # Center features
   :center => true,
   # Scale features
@@ -376,7 +387,7 @@ Available learners:
   - "DecisionTreeClassifier"
 
 ```julia
-learner = SKLLearner(Dict(
+learner = CT.SKLLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
@@ -401,7 +412,7 @@ CARET wrapper that provides access to all learners.
 Options for the specific CARET learner is to be passed
 in `options[:impl_options]` dictionary.
 ```julia
-learner = CRTLearner(Dict(
+learner = CT.CRTLearner(Dict(
   # Output to train against
   # (:class).
   :output => :class,
