@@ -1,7 +1,7 @@
 name = "CombineML"
 uuid = "f3117721-c1d3-5ff8-9230-e4dd1549a252"
 authors = ["Paulito Palmes <ppalmes@gmail.com>"]
-version = "1.2.5"
+version = "1.2.7"
 
 [deps]
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
