@@ -9,6 +9,15 @@ using InteractiveUtils
 using CombineML.Types
 using CombineML.System
 using CombineML.Transformers
+
+if LIB_SKL_AVAILABLE
+  using CombineML.Transformers.ScikitLearnWrapper
+end
+if LIB_CRT_AVAILABLE
+  using CombineML.Transformers.CaretWrapper
+end
+ 
+
 using CombineML.Util
 using Test
 
@@ -56,8 +65,8 @@ concrete_learner_types = setdiff(
     test_features = features[test_ind, :] |> Matrix
     train_labels = labels[train_ind] |> Vector
     test_labels = labels[test_ind] |> Vector
-    m = CRTLearner()
-    fit!(m,train_features,train_labels)
+    #m = CRTLearner()
+    #fit!(m,train_features,train_labels)
     # Test all learners
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
