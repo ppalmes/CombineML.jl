@@ -58,8 +58,8 @@ concrete_learner_types = setdiff(
     test_features = features[test_ind, :] |> Matrix
     train_labels = labels[train_ind] |> Vector
     test_labels = labels[test_ind] |> Vector
-    m = CRTLearner()
-    fit!(m,train_features,train_labels)
+    #m = CRTLearner()
+    #fit!(m,train_features,train_labels)
     # Test all learners
     for concrete_learner_type in concrete_learner_types
       learner = concrete_learner_type()
