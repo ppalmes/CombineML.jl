@@ -9,6 +9,8 @@ using InteractiveUtils
 using CombineML.Types
 using CombineML.System
 using CombineML.Transformers
+using CombineML.Transformers.CaretWrapper
+using CombineML.Transformers.ScikitLearnWrapper
 using CombineML.Util
 using Test
 
