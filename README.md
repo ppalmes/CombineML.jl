@@ -137,6 +137,15 @@ Outlined are all the transformers currently available via CombineML.
 
 Baseline learner that by default assigns the most frequent label.
 ```julia
+
+try
+  import StatsBase
+catch
+  using Pkg
+  Pkg.add("StatsBase")
+  import StatsBase
+end
+
 learner = CT.Baseline(Dict(
   # Output to train against
   # (:class).
