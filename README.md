@@ -409,9 +409,9 @@ learner = CT.SKLLearner(Dict(
 
 ### R
 
-Python library 'rpy2' is required to interface with R.
+RCall is used to interface with caret learners.
 
-R library 'caret' offers more than 100 learners. 
+R 'caret' library offers more than 100 learners. 
 See [here](http://caret.r-forge.r-project.org/modelList.html) for more details.
 
 #### CRTLearner (caret 6.0 Learner)
