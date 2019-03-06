@@ -373,34 +373,31 @@ Wrapper for scikit-learn that provides access to most learners.
 Options for the specific scikit-learn learner is to be passed
 in `options[:impl_options]` dictionary.
 
-Available learners:
+Available Classifiers:
 
-  - "AdaBoostClassifier"
-  - "BaggingClassifier"
-  - "ExtraTreesClassifier"
-  - "GradientBoostingClassifier"
-  - "RandomForestClassifier"
-  - "LDA"
-  - "LogisticRegression"
-  - "PassiveAggressiveClassifier"
-  - "RidgeClassifier"
-  - "RidgeClassifierCV"
-  - "SGDClassifier"
-  - "KNeighborsClassifier"
-  - "RadiusNeighborsClassifier"
-  - "NearestCentroid"
-  - "QDA"
-  - "SVC"
-  - "LinearSVC"
-  - "NuSVC"
-  - "DecisionTreeClassifier"
+  - AdaBoostClassifier, BaggingClassifier, ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier, LDA, LogisticRegression, PassiveAggressiveClassifier, RidgeClassifier, RidgeClassifierCV, SGDClassifier, KNeighborsClassifier, RadiusNeighborsClassifier, NearestCentroid, QDA, SVC, LinearSVC, NuSVC, DecisionTreeClassifier, GaussianNB, MultinomialNB, ComplementNB, BernoulliNB
+  
+Available Regressors:
+- SVR, Ridge, RidgeCV, Lasso, ElasticNet, Lars, LassoLars, OrthogonalMatchingPursuit, BayesianRidge, ARDRegression, SGDRegressor, PassiveAggressiveRegressor, KernelRidge, KNeighborsRegressor, RadiusNeighborsRegressor, GaussianProcessRegressor, DecisionTreeRegressor, RandomForestRegressor, ExtraTreesRegressor, AdaBoostRegressor, GradientBoostingRegressor, IsotonicRegression, MLPRegressor
+
 
 ```julia
+# classifier example
 learner = CT.SKLLearner(Dict(
   # Output to train against
-  # (:class).
+  # (classification).
   :output => :class,
   :learner => "LinearSVC",
+  # Options specific to this implementation.
+  :impl_options => Dict()
+))
+
+# regression example
+learner = CT.SKLLearner(Dict(
+  # Output to train against
+  # (regression).
+  :output => :reg,
+  :learner => "GradientBoostingRegressor",
   # Options specific to this implementation.
   :impl_options => Dict()
 ))
