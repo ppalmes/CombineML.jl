@@ -4,6 +4,8 @@ are held by Paulito Palmes, 2016.
 
 The CombineML.jl package is licensed under the MIT "Expat" License:
 
+You may also be interested to [TSML (Time Series Machine Learning)](https://github.com/IBM/TSML.jl) package.
+
 # CombineML
 
 [![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
