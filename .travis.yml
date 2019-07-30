@@ -9,10 +9,6 @@ julia:
 matrix:
   allow_failures:
     - julia: nightly
-env:
-  matrix:
-    - CONDA_JL_VERSION="2" PYTHON=""
-    - CONDA_JL_VERSION="3" PYTHON=""
 notifications:
   email: false
 
