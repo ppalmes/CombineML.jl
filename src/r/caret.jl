@@ -20,7 +20,7 @@ R"library(kernlab)"
 R"library(grid)"
 R"library(MASS)"
 R"library(pls)"
-R"library(xgboost)"
+#R"library(xgboost)"
 
 
 export CRTLearner,
@@ -51,7 +51,7 @@ mutable struct CRTLearner <: Learner
   end
 end
 
-function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,Matrix}}
+function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,DataFrame,Matrix}}
     xx = x |> DataFrame
     yy = y |> Vector
     rres = rcall(:train,xx,yy,method=crt.options[:learner],trControl = reval(crt.options[:fitControl]))
@@ -59,7 +59,7 @@ function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,Matrix}}
     crt.model = rres
 end
 
-function transform!(crt::CRTLearner,x::T) where  {T<:Union{Vector,Matrix}}
+function transform!(crt::CRTLearner,x::T) where  {T<:Union{Vector,Matrix,DataFrame}}
     xx = x |> DataFrame
     res = rcall(:predict,crt.model,xx)
     return rcopy(res)

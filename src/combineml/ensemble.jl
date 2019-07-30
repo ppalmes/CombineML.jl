@@ -1,6 +1,7 @@
 # Ensemble learning methods.
 module EnsembleMethods
 
+using DataFrames
 using Statistics
 using Random
 using CombineML.Types
@@ -40,19 +41,19 @@ mutable struct VoteEnsemble <: Learner
   end
 end
 
-function fit!(ve::VoteEnsemble, instances::Matrix, labels::Vector)
+function fit!(ve::VoteEnsemble, xinstances::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   # Train all learners
   learners = ve.options[:learners]
   for learner in learners
-    fit!(learner, instances, labels)
+    fit!(learner, xinstances, labels)
   end
   ve.model = Dict( :learners => learners )
 end
 
-function transform!(ve::VoteEnsemble, instances::Matrix)
+function transform!(ve::VoteEnsemble, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
   # Make learners vote
   learners = ve.options[:learners]
-  predictions = map(learner -> transform!(learner, instances), learners)
+  predictions = map(learner -> transform!(learner, xinstances), learners)
   # Return majority vote prediction
   return StatsBase.mode(predictions)
 end
@@ -80,10 +81,10 @@ mutable struct StackEnsemble <: Learner
   end
 end
 
-function fit!(se::StackEnsemble, instances::Matrix, labels::Vector)
+function fit!(se::StackEnsemble, xinstances::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   learners = se.options[:learners]
   num_learners = size(learners, 1)
-  num_instances = size(instances, 1)
+  num_instances = size(xinstances, 1)
   num_labels = size(labels, 1)
   
   # Perform holdout to obtain indices for 
@@ -93,8 +94,8 @@ function fit!(se::StackEnsemble, instances::Matrix, labels::Vector)
   (learner_indices, stack_indices) = holdout(num_instances, stack_proportion)
   
   # Partition training set for learners and stacker
-  learner_instances = instances[learner_indices, :]
-  stack_instances = instances[stack_indices, :]
+  learner_instances = xinstances[learner_indices, :]
+  stack_instances = xinstances[stack_indices, :]
   learner_labels = labels[learner_indices]
   stack_labels = labels[stack_indices]
   
@@ -121,14 +122,14 @@ function fit!(se::StackEnsemble, instances::Matrix, labels::Vector)
   )
 end
 
-function transform!(se::StackEnsemble, instances::Matrix)
+function transform!(se::StackEnsemble, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
   # Build stacker instances
   learners = se.model[:learners]
   stacker = se.model[:stacker]
   label_map = se.model[:label_map]
   keep_original_features = se.model[:keep_original_features]
   stacker_instances = build_stacker_instances(
-    learners, instances, label_map, keep_original_features
+    learners, xinstances, label_map, keep_original_features
   )
 
   # Predict
@@ -137,18 +138,18 @@ end
 
 # Build stacker instances.
 function build_stacker_instances(
-  learners::Vector{T}, instances::Matrix, 
+  learners::Vector{T}, xinstances::Matrix, 
   label_map, keep_original_features=false) where T<:Learner
 
   # Build empty stacker instance space
   num_labels = size(label_map.vs, 1)
-  num_instances = size(instances, 1)
+  num_instances = size(xinstances, 1)
   num_learners = size(learners, 1)
   stacker_instances = zeros(num_instances, num_learners * num_labels)
 
   # Fill stack instances with predictions from learners
   for l_index = 1:num_learners
-    predictions = transform!(learners[l_index], instances)
+    predictions = transform!(learners[l_index], xinstances)
     for p_index in 1:size(predictions, 1)
       pred_encoding = MLBase.labelencode(label_map, predictions[p_index])
       pred_column = (l_index-1) * num_labels + pred_encoding
@@ -159,7 +160,7 @@ function build_stacker_instances(
 
   # Add original features to stacker instance space if enabled
   if keep_original_features
-    stacker_instances = [instances stacker_instances]
+    stacker_instances = [xinstances stacker_instances]
   end
   
   # Return stacker instances
@@ -178,7 +179,7 @@ mutable struct BestLearner <: Learner
       # (:class).
       :output => :class,
       # Function to return partitions of instance indices.
-      :partition_generator => (instances, labels) -> kfold(size(instances, 1), 5),
+      :partition_generator => (xinstances, labels) -> kfold(size(xinstances, 1), 5),
       # Function that selects the best learner by index.
       # Arg learner_partition_scores is a (learner, partition) score matrix.
       :selection_function => (learner_partition_scores) -> findmax(mean(learner_partition_scores, dims=2))[2],      
@@ -196,7 +197,7 @@ mutable struct BestLearner <: Learner
   end
 end
 
-function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
+function fit!(bls::BestLearner, xinstances::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   # Obtain learners as is if no options grid present 
   if bls.options[:learner_options_grid] == nothing
     learners = bls.options[:learners]
@@ -235,12 +236,12 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
 
   # Generate partitions
   partition_generator = bls.options[:partition_generator]
-  partitions = partition_generator(instances, labels)
+  partitions = partition_generator(xinstances, labels)
 
   # Train each learner on each partition and obtain validation output
   num_partitions = size(partitions, 1)
   num_learners = size(learners, 1)
-  num_instances = size(instances, 1)
+  num_instances = size(xinstances, 1)
   score_type = bls.options[:score_type]
   learner_partition_scores = Array{score_type}(undef,num_learners, num_partitions)
   for l_index = 1:num_learners, p_index = 1:num_partitions
@@ -248,9 +249,9 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
     rest = setdiff(1:num_instances, partition)
     learner = learners[l_index]
 
-    training_instances = instances[partition,:]
+    training_instances = xinstances[partition,:]
     training_labels = labels[partition]
-    validation_instances = instances[rest, :]
+    validation_instances = xinstances[rest, :]
     validation_labels = labels[rest]
 
     fit!(learner, training_instances, training_labels)
@@ -265,7 +266,7 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
   best_learner = learners[best_learner_index]
   
   # Retrain best learner on all training instances
-  fit!(best_learner, instances, labels)
+  fit!(best_learner, xinstances, labels)
   
   # Create model
   bls.model = Dict(
@@ -276,8 +277,8 @@ function fit!(bls::BestLearner, instances::Matrix, labels::Vector)
   )
 end
 
-function transform!(bls::BestLearner, instances::Matrix)
-  transform!(bls.model[:best_learner], instances)
+function transform!(bls::BestLearner, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  transform!(bls.model[:best_learner], xinstances)
 end
 
 end # module

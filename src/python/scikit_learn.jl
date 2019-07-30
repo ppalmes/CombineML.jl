@@ -3,6 +3,7 @@ module ScikitLearnWrapper
 
 export skkrun
 using RDatasets
+using DataFrames
 
 using CombineML.Types
 import CombineML.Types.fit!
@@ -126,7 +127,7 @@ mutable struct SKLLearner <: Learner
   end
 end
 
-function fit!(sklw::SKLLearner, instances::T, labels::Vector) where {T <: Union{Matrix,Vector}}
+function fit!(sklw::SKLLearner, xinstances::T, labels::Vector) where {T <: Union{Vector,Matrix,DataFrame}}
   impl_options = copy(sklw.options[:impl_options])
   learner = sklw.options[:learner]
   py_learner = learner_dict[learner]
@@ -140,23 +141,25 @@ function fit!(sklw::SKLLearner, instances::T, labels::Vector) where {T <: Union{
 
   # Train
   sklw.model = py_learner(;impl_options...)
-  sklw.model.fit(instances, labels)
+  features = convert(Matrix,xinstances)
+  sklw.model.fit(features, labels)
 end
 
-function transform!(sklw::SKLLearner, instances::T) where {T <: Union{Matrix,Vector}}
-  return collect(sklw.model.predict(instances))
+function transform!(sklw::SKLLearner, xinstances::T) where {T <: Union{Vector,Matrix,DataFrame}}
+  features = convert(Matrix,xinstances)
+  return collect(sklw.model.predict(features))
 end
 
 function skkrun()
     iris=dataset("datasets","iris")
-    instances=iris[:,1:4] |> Matrix
+    xinstances=iris[:,1:4] |> Matrix
     labels=iris[:,5] |> Vector
     model1 = SKLLearner(Dict(:learner=>"LinearSVC",:impl_args=>Dict(:max_iter=>5000)))
     model2 = SKLLearner(Dict(:learner=>"QDA"))
     model3 = SKLLearner(Dict(:learner=>"MLPClassifier"))
     model = SKLLearner(Dict(:learner=>"BernoulliNB"))
-    fit!(model,instances,labels)
-    println(sum(transform!(model,instances).==labels)/length(labels)*100)
+    fit!(model,xinstances,labels)
+    println(sum(transform!(model,xinstances).==labels)/length(labels)*100)
 
     x=iris[:,1:3] |> Matrix
     y=iris[:,4] |> Vector

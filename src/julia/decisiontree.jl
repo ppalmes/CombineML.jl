@@ -1,6 +1,7 @@
 # Decision trees as found in DecisionTree Julia package.
 module DecisionTreeWrapper
 
+using DataFrames
 using CombineML.Types
 import CombineML.Types.fit!
 import CombineML.Types.transform!
@@ -43,11 +44,12 @@ mutable struct PrunedTree <: Learner
   end
 end
 
-function fit!(tree::PrunedTree, instances::Matrix, labels::Vector)
+function fit!(tree::PrunedTree, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances=convert(Matrix,features)
   impl_options = tree.options[:impl_options]
   tree.model = DT.build_tree(
     labels,
-    instances,
+    xinstances,
     0, # num_subfeatures (keep all)
     impl_options[:max_depth],
     impl_options[:min_samples_leaf],
@@ -55,8 +57,10 @@ function fit!(tree::PrunedTree, instances::Matrix, labels::Vector)
     impl_options[:min_purity_increase])
   tree.model = DT.prune_tree(tree.model, impl_options[:purity_threshold])
 end
-function transform!(tree::PrunedTree, instances::Matrix)
-  return DT.apply_tree(tree.model, instances)
+
+function transform!(tree::PrunedTree, features::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances=convert(Matrix,features)
+  return DT.apply_tree(tree.model, xinstances)
 end
 
 # Random forest (CART).
@@ -85,13 +89,14 @@ mutable struct RandomForest <: Learner
   end
 end
 
-function fit!(forest::RandomForest, instances::Matrix, labels::Vector)
+function fit!(forest::RandomForest, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances=convert(Matrix,features)
   # Set training-dependent options
   impl_options = forest.options[:impl_options]
   # Build model
   forest.model = DT.build_forest(
     labels, 
-    instances,
+    xinstances,
     impl_options[:num_subfeatures],
     impl_options[:num_trees],
     impl_options[:partial_sampling],
@@ -99,8 +104,9 @@ function fit!(forest::RandomForest, instances::Matrix, labels::Vector)
   )
 end
 
-function transform!(forest::RandomForest, instances::Matrix)
-  return DT.apply_forest(forest.model, instances)
+function transform!(forest::RandomForest, features::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances = convert(Matrix,features)
+  return DT.apply_forest(forest.model, xinstances)
 end
 
 # Adaboosted decision stumps.
@@ -123,15 +129,15 @@ mutable struct DecisionStumpAdaboost <: Learner
   end
 end
 
-function fit!(adaboost::DecisionStumpAdaboost, 
-  instances::Matrix, labels::Vector)
+function fit!(adaboost::DecisionStumpAdaboost, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances = convert(Matrix,features)
 
   # NOTE(svs14): Variable 'model' renamed to 'ensemble'.
   #              This differs to DecisionTree
   #              official documentation to avoid confusion in variable
   #              naming within CombineML.
   ensemble, coefficients = DT.build_adaboost_stumps(
-    labels, instances, adaboost.options[:impl_options][:num_iterations]
+    labels, xinstances, adaboost.options[:impl_options][:num_iterations]
   )
   adaboost.model = Dict(
     :ensemble => ensemble,
@@ -139,9 +145,10 @@ function fit!(adaboost::DecisionStumpAdaboost,
   )
 end
 
-function transform!(adaboost::DecisionStumpAdaboost, instances::Matrix)
+function transform!(adaboost::DecisionStumpAdaboost, features::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances = convert(Matrix,features)
   return DT.apply_adaboost_stumps(
-    adaboost.model[:ensemble], adaboost.model[:coefficients], instances
+    adaboost.model[:ensemble], adaboost.model[:coefficients], xinstances
   )
 end
 

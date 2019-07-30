@@ -1,6 +1,7 @@
 # Baseline methods.
 module BaselineMethods
 
+using DataFrames
 using CombineML.Types
 import CombineML.Types.fit!
 import CombineML.Types.transform!
@@ -30,12 +31,12 @@ mutable struct Baseline <: Learner
   end
 end
 
-function fit!(bl::Baseline, instances::Matrix, labels::Vector)
+function fit!(bl::Baseline, xinstances::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   bl.model = bl.options[:strategy](labels)
 end
 
-function transform!(bl::Baseline, instances::Matrix)
-  return fill(bl.model, size(instances, 1))
+function transform!(bl::Baseline, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  return fill(bl.model, size(xinstances, 1))
 end
 
 
@@ -50,12 +51,12 @@ mutable struct Identity <: Transformer
   end
 end
 
-function fit!(id::Identity, instances::Matrix, labels::Vector)
+function fit!(id::Identity, xinstances::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   nothing
 end
 
-function transform!(id::Identity, instances::Matrix)
-  return instances
+function transform!(id::Identity, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  return xinstances
 end
 
 end # module

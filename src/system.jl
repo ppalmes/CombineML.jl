@@ -12,7 +12,7 @@ export LIB_SKL_AVAILABLE,
 function check_py_dep(package::AbstractString)
   is_available = true
   try
-    pyimport(package)
+    pyimport_conda(package)
   catch
     try 
       Conda.add(package)
@@ -39,7 +39,7 @@ function check_r_dep()
       R"install.packages('grid',repos='https://cloud.r-project.org',type='binary')"
       R"install.packages('MASS',repos='https://cloud.r-project.org',type='binary')"
       R"install.packages('pls',repos='https://cloud.r-project.org',type='binary')"
-      R"install.packages('xgboost',repos='https://cloud.r-project.org',type='binary')"
+      #R"install.packages('xgboost',repos='https://cloud.r-project.org',type='binary')"
       is_available = true
     catch
       is_available = false
