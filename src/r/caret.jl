@@ -11,16 +11,15 @@ import CombineML.Types.transform!
 using CombineML.Util
 
 using RCall
-R"library(caret)"
-R"library(e1071)"
-R"library(gam)"
-R"library(randomForest)"
-R"library(nnet)"
-R"library(kernlab)"
-R"library(grid)"
-R"library(MASS)"
-R"library(pls)"
-#R"library(xgboost)"
+
+function initlibs()
+  packages = ["caret","e1071","gam","randomForest",
+              "nnet","kernlab","grid","MASS","pls"]
+
+  for pk in packages
+    rcall(:library,pk,"lib=.libPaths()")
+  end
+end
 
 
 export CRTLearner,
@@ -47,6 +46,7 @@ mutable struct CRTLearner <: Learner
       :fitControl => fitControl,
       :impl_options => Dict()
     )
+    initlibs()
     new(nothing, nested_dict_merge(default_options, options)) 
   end
 end
@@ -72,7 +72,7 @@ function caretrun()
     y=iris[:,5] |> Vector
     fit!(crt,x,y)
     print(crt.model)
-    transform!(crt,x)
+    transform!(crt,x) |> collect
 end
 
 

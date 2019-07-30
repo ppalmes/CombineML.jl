@@ -2,7 +2,6 @@
 module ScikitLearnWrapper
 
 export skkrun
-using RDatasets
 using DataFrames
 
 using CombineML.Types
@@ -12,104 +11,76 @@ using CombineML.Util
 
 using PyCall
 
-const ENS=pyimport("sklearn.ensemble")
-const LM=pyimport("sklearn.linear_model")
-const DA=pyimport("sklearn.discriminant_analysis")
-const NN=pyimport("sklearn.neighbors")
-const SVM=pyimport("sklearn.svm")
-const TREE=pyimport("sklearn.tree")
-const ANN=pyimport("sklearn.neural_network")
-const GP=pyimport("sklearn.gaussian_process")
-const KR=pyimport("sklearn.kernel_ridge")
-const NB=pyimport("sklearn.naive_bayes")
-const ISO=pyimport("sklearn.isotonic")
+function initlibs()
+  global ENS=pyimport("sklearn.ensemble")
+  global LM=pyimport("sklearn.linear_model")
+  global DA=pyimport("sklearn.discriminant_analysis")
+  global NN=pyimport("sklearn.neighbors")
+  global SVM=pyimport("sklearn.svm")
+  global TREE=pyimport("sklearn.tree")
+  global ANN=pyimport("sklearn.neural_network")
+  global GP=pyimport("sklearn.gaussian_process")
+  global KR=pyimport("sklearn.kernel_ridge")
+  global NB=pyimport("sklearn.naive_bayes")
+  global ISO=pyimport("sklearn.isotonic")
 
-
+ # Available scikit-learn learners.
+  global learner_dict = Dict(
+       "AdaBoostClassifier" => ENS.AdaBoostClassifier,
+       "BaggingClassifier" => ENS.BaggingClassifier,
+       "ExtraTreesClassifier" => ENS.ExtraTreesClassifier,
+       "VotingClassifier" => ENS.VotingClassifier,
+       "GradientBoostingClassifier" => ENS.GradientBoostingClassifier,
+       "RandomForestClassifier" => ENS.RandomForestClassifier,
+       "LDA" => DA.LinearDiscriminantAnalysis,
+       "QDA" => DA.QuadraticDiscriminantAnalysis,
+       "LogisticRegression" => LM.LogisticRegression,
+       "PassiveAggressiveClassifier" => LM.PassiveAggressiveClassifier,
+       "RidgeClassifier" => LM.RidgeClassifier,
+       "RidgeClassifierCV" => LM.RidgeClassifierCV,
+       "SGDClassifier" => LM.SGDClassifier,
+       "KNeighborsClassifier" => NN.KNeighborsClassifier,
+       "RadiusNeighborsClassifier" => NN.RadiusNeighborsClassifier,
+       "NearestCentroid" => NN.NearestCentroid,
+       "SVC" => SVM.SVC,
+       "LinearSVC" => SVM.LinearSVC,
+       "NuSVC" => SVM.NuSVC,
+       "MLPClassifier" => ANN.MLPClassifier,
+       "GaussianProcessClassifier" => GP.GaussianProcessClassifier,
+       "DecisionTreeClassifier" => TREE.DecisionTreeClassifier,
+       "GaussianNB" => NB.GaussianNB,
+       "MultinomialNB" => NB.MultinomialNB,
+       "ComplementNB" => NB.ComplementNB,
+       "BernoulliNB" => NB.BernoulliNB,
+       "SVR" => SVM.SVR,
+       "Ridge" => LM.Ridge,
+       "RidgeCV" => LM.RidgeCV,
+       "Lasso" => LM.Lasso,
+       "ElasticNet" => LM.ElasticNet,
+       "Lars" => LM.Lars,
+       "LassoLars" => LM.LassoLars,
+       "OrthogonalMatchingPursuit" => LM.OrthogonalMatchingPursuit,
+       "BayesianRidge" => LM.BayesianRidge,
+       "ARDRegression" => LM.ARDRegression,
+       "SGDRegressor" => LM.SGDRegressor,
+       "PassiveAggressiveRegressor" => LM.PassiveAggressiveRegressor,
+       "KernelRidge" => KR.KernelRidge,
+       "KNeighborsRegressor" => NN.KNeighborsRegressor,
+       "RadiusNeighborsRegressor" => NN.RadiusNeighborsRegressor,
+       "GaussianProcessRegressor" => GP.GaussianProcessRegressor,
+       "DecisionTreeRegressor" => TREE.DecisionTreeRegressor,
+       "RandomForestRegressor" => ENS.RandomForestRegressor,
+       "ExtraTreesRegressor" => ENS.ExtraTreesRegressor,
+       "AdaBoostRegressor" => ENS.AdaBoostRegressor,
+       "GradientBoostingRegressor" => ENS.GradientBoostingRegressor,
+       "IsotonicRegression" => ISO.IsotonicRegression,
+       "MLPRegressor" => ANN.MLPRegressor
+  )
+end
 export SKLLearner,
        fit!,
        transform!
 
-# Available scikit-learn learners.
-learner_dict = Dict(
-  "AdaBoostClassifier" => ENS.AdaBoostClassifier,
-  "BaggingClassifier" => ENS.BaggingClassifier,
-  "ExtraTreesClassifier" => ENS.ExtraTreesClassifier,
-  "VotingClassifier" => ENS.VotingClassifier,
-  "GradientBoostingClassifier" => ENS.GradientBoostingClassifier,
-  "RandomForestClassifier" => ENS.RandomForestClassifier,
-  "LDA" => DA.LinearDiscriminantAnalysis,
-  "QDA" => DA.QuadraticDiscriminantAnalysis,
-  "LogisticRegression" => LM.LogisticRegression,
-  "PassiveAggressiveClassifier" => LM.PassiveAggressiveClassifier,
-  "RidgeClassifier" => LM.RidgeClassifier,
-  "RidgeClassifierCV" => LM.RidgeClassifierCV,
-  "SGDClassifier" => LM.SGDClassifier,
-  "KNeighborsClassifier" => NN.KNeighborsClassifier,
-  "RadiusNeighborsClassifier" => NN.RadiusNeighborsClassifier,
-  "NearestCentroid" => NN.NearestCentroid,
-  "SVC" => SVM.SVC,
-  "LinearSVC" => SVM.LinearSVC,
-  "NuSVC" => SVM.NuSVC,
-  "MLPClassifier" => ANN.MLPClassifier,
-  "GaussianProcessClassifier" => GP.GaussianProcessClassifier,
-  "DecisionTreeClassifier" => TREE.DecisionTreeClassifier,
-  "GaussianNB" => NB.GaussianNB,
-  "MultinomialNB" => NB.MultinomialNB,
-  "ComplementNB" => NB.ComplementNB,
-  "BernoulliNB" => NB.BernoulliNB,
-  "SVR" => SVM.SVR,
-  "Ridge" => LM.Ridge,
-  "RidgeCV" => LM.RidgeCV,
-  "Lasso" => LM.Lasso,
-  "ElasticNet" => LM.ElasticNet,
-  "Lars" => LM.Lars,
-  "LassoLars" => LM.LassoLars,
-  "OrthogonalMatchingPursuit" => LM.OrthogonalMatchingPursuit,
-  "BayesianRidge" => LM.BayesianRidge,
-  "ARDRegression" => LM.ARDRegression,
-  "SGDRegressor" => LM.SGDRegressor,
-  "PassiveAggressiveRegressor" => LM.PassiveAggressiveRegressor,
-  "KernelRidge" => KR.KernelRidge,
-  "KNeighborsRegressor" => NN.KNeighborsRegressor,
-  "RadiusNeighborsRegressor" => NN.RadiusNeighborsRegressor,
-  "GaussianProcessRegressor" => GP.GaussianProcessRegressor,
-  "DecisionTreeRegressor" => TREE.DecisionTreeRegressor,
-  "RandomForestRegressor" => ENS.RandomForestRegressor,
-  "ExtraTreesRegressor" => ENS.ExtraTreesRegressor,
-  "AdaBoostRegressor" => ENS.AdaBoostRegressor,
-  "GradientBoostingRegressor" => ENS.GradientBoostingRegressor,
-  "IsotonicRegression" => ISO.IsotonicRegression,
-  "MLPRegressor" => ANN.MLPRegressor
-)
-
-
-# Wrapper for scikit-learn that provides access to most learners.
-# 
-# Options for the specific scikit-learn learner is to be passed
-# in `options[:impl_options]` dictionary.
-# 
-# Available learners:
-#
-#   - "AdaBoostClassifier"
-#   - "BaggingClassifier"
-#   - "ExtraTreesClassifier"
-#   - "GradientBoostingClassifier"
-#   - "RandomForestClassifier"
-#   - "LDA"
-#   - "LogisticRegression"
-#   - "PassiveAggressiveClassifier"
-#   - "RidgeClassifier"
-#   - "RidgeClassifierCV"
-#   - "SGDClassifier"
-#   - "KNeighborsClassifier"
-#   - "RadiusNeighborsClassifier"
-#   - "NearestCentroid"
-#   - "QDA"
-#   - "SVC"
-#   - "LinearSVC"
-#   - "NuSVC"
-#   - "DecisionTreeClassifier"
-#
 mutable struct SKLLearner <: Learner
   model
   options
@@ -123,6 +94,7 @@ mutable struct SKLLearner <: Learner
       # Options specific to this implementation.
       :impl_options => Dict()
     )
+    initlibs()
     new(nothing, nested_dict_merge(default_options, options)) 
   end
 end
@@ -149,32 +121,5 @@ function transform!(sklw::SKLLearner, xinstances::T) where {T <: Union{Vector,Ma
   features = convert(Matrix,xinstances)
   return collect(sklw.model.predict(features))
 end
-
-function skkrun()
-    iris=dataset("datasets","iris")
-    xinstances=iris[:,1:4] |> Matrix
-    labels=iris[:,5] |> Vector
-    model1 = SKLLearner(Dict(:learner=>"LinearSVC",:impl_args=>Dict(:max_iter=>5000)))
-    model2 = SKLLearner(Dict(:learner=>"QDA"))
-    model3 = SKLLearner(Dict(:learner=>"MLPClassifier"))
-    model = SKLLearner(Dict(:learner=>"BernoulliNB"))
-    fit!(model,xinstances,labels)
-    println(sum(transform!(model,xinstances).==labels)/length(labels)*100)
-
-    x=iris[:,1:3] |> Matrix
-    y=iris[:,4] |> Vector
-    #regmodel = SKLLearner(Dict(:learner => "SVR",:impl_args=>Dict(:gamma=>"scale")))
-    #regmodel = SKLLearner(Dict(:learner => "RidgeCV"))
-    regmodel = SKLLearner(Dict(:learner => "GradientBoostingRegressor"))
-    #regmodel = SKLLearner(Dict(:learner => "MLPRegressor"))
-    fit!(regmodel,x,y)
-    println(sum(transform!(regmodel,x).-y)/length(labels)*100)
-    xx=iris[:,1] |> Vector
-    regmodel = SKLLearner(Dict(:learner => "IsotonicRegression"))
-    fit!(regmodel,xx,y)
-    println(sum(transform!(regmodel,xx).-y)/length(labels)*100)
-end
-
-
 
 end # module
