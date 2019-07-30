@@ -1,9 +1,9 @@
-using PyCall: pyimport, pycall
+using PyCall: pyimport_conda, pycall
 using RCall, Conda
 
 function installpypackage()
 	try
-		pyimport_conda("sklearn")
+		pyimport_conda("sklearn", "scikit-learn")
 	catch
 		try
 			Conda.add("scikit-learn")

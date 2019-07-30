@@ -13,7 +13,7 @@ import PyCall: pyimport_conda, pycall
 function check_py_dep()
   is_available = true
   try
-    pyimport_conda("sklearn")
+    pyimport_conda("sklearn", "scikit-learn")
   catch
     @info "scikitlearn not available"
     is_available = false

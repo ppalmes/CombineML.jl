@@ -1,6 +1,7 @@
 #Run all tests.
 module TestRunner
   using Test
+  using CombineML
   using CombineML.System
 
   include("test_util.jl")
