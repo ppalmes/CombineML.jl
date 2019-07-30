@@ -1,5 +1,5 @@
 # CombineML module
-__precompile__(false)
+#__precompile__(false)
 module CombineML
 
 # Load source files
