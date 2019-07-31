@@ -18,8 +18,8 @@ CW = CaretWrapper
 using RCall
 R"library(caret)"
 R"library(randomForest)"
-#R"library(e1071)"
-#R"library(gam)"
+R"library(e1071)"
+R"library(gam)"
 #R"library(nnet)"
 #R"library(kernlab)"
 #R"library(grid)"
