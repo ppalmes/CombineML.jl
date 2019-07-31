@@ -1,41 +1,28 @@
 module TestScikitLearnWrapper
 using Random
-
-include(joinpath("..", "fixture_learners.jl"))
-using .FixtureLearners
-nfcp = NumericFeatureClassification()
-
 using Test
-
+using PyCall
 
 using CombineML.Types
 import CombineML.Types.fit!
 import CombineML.Types.transform!
 using CombineML.Transformers.ScikitLearnWrapper
 
-using PyCall
-const ENS=pyimport("sklearn.ensemble")
-const LM=pyimport("sklearn.linear_model")
-const DA=pyimport("sklearn.discriminant_analysis")
-const NN=pyimport("sklearn.neighbors")
-const SVM=pyimport("sklearn.svm")
-const TREE=pyimport("sklearn.tree")
-const ANN=pyimport("sklearn.neural_network")
-const GP=pyimport("sklearn.gaussian_process")
-const KR=pyimport("sklearn.kernel_ridge")
-const NB=pyimport("sklearn.naive_bayes")
-const ISO=pyimport("sklearn.isotonic")
-const RAN=pyimport("random")
+include(joinpath("..", "fixture_learners.jl"))
+using .FixtureLearners
+nfcp = NumericFeatureClassification()
+
+ScikitLearnWrapper.initlibs()
 
 
 function skl_fit_and_transform!(learner::Learner, problem::MLProblem, seed=1)
-  RAN.seed(seed)
+  #RAN.seed(seed)
   Random.seed!(seed)
   return fit_and_transform!(learner, problem, seed)
 end
 
 function backend_fit_and_transform!(sk_learner, seed=1)
-  RAN.seed(seed)
+  #RAN.seed(seed)
   Random.seed!(seed)
   sk_learner.fit(nfcp.train_instances, nfcp.train_labels)
   return collect(sk_learner.predict(nfcp.test_instances))

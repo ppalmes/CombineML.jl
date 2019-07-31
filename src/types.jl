@@ -1,5 +1,6 @@
 # CombineML types.
 module Types
+using DataFrames
 
 export Transformer,
        Learner,
@@ -23,7 +24,7 @@ abstract type TestLearner <: Learner end
 # @param transformer Target transformer.
 # @param instances Training instances.
 # @param labels Training labels.
-function fit!(transformer::Transformer, instances::T, labels::Vector) where {T <: Union{Matrix,Vector}}
+function fit!(transformer::Transformer, xinstances::T, labels::Vector) where {T <: Union{Vector,Matrix,DataFrame}}
   error(typeof(transformer), " does not implement fit!")
 end
 
@@ -32,7 +33,7 @@ end
 # @param transformer Target transformer.
 # @param instances Original instances.
 # @return Transformed instances.
-function transform!(transformer::Transformer, instances::T) where {T <: Union{Matrix,Vector}}
+function transform!(transformer::Transformer, xinstances::T) where {T <: Union{Vector,Matrix,DataFrame}}
   error(typeof(transformer), " does not implement transform!")
 end
 

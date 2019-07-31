@@ -1,6 +1,7 @@
 # Dimensionality Reduction transformers.
 module DimensionalityReductionWrapper
 
+using DataFrames
 using CombineML.Types
 import CombineML.Types.fit!
 import CombineML.Types.transform!
@@ -31,21 +32,23 @@ mutable struct PCA <: Transformer
   end
 end
 
-function fit!(p::PCA, instances::Matrix, labels::Vector)
+function fit!(p::PCA, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances=convert(Matrix,features)
   _pratio=1.0
-  _maxoutdim=size(instances')[1]
+  _maxoutdim=size(xinstances')[1]
   if haskey(p.options,:pratio)
     _pratio=p.options[:pratio]
   end
   if haskey(p.options,:maxoutdim)
     _maxoutdim=convert(Int64,p.options[:maxoutdim])
   end
-  pca_model =fit(MultivariateStats.PCA,instances',pratio=_pratio,maxoutdim=_maxoutdim)
+  pca_model =fit(MultivariateStats.PCA,xinstances',pratio=_pratio,maxoutdim=_maxoutdim)
   p.model = pca_model
 end
 
-function transform!(p::PCA, instances::Matrix)
-  res=transform(p.model,instances')
+function transform!(p::PCA, features::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  xinstances = convert(Matrix,features)
+  res=transform(p.model,xinstances')
   return res'
 end
 

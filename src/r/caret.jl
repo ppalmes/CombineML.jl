@@ -11,16 +11,17 @@ import CombineML.Types.transform!
 using CombineML.Util
 
 using RCall
-R"library(caret)"
-R"library(e1071)"
-R"library(gam)"
-R"library(randomForest)"
-R"library(nnet)"
-R"library(kernlab)"
-R"library(grid)"
-R"library(MASS)"
-R"library(pls)"
-R"library(xgboost)"
+
+function initlibs()
+  #packages = ["caret","e1071","gam","randomForest",
+  #            "nnet","kernlab","grid","MASS","pls"]
+
+  packages = ["caret","e1071","gam","randomForest"]
+
+  for pk in packages
+    rcall(:library,pk,"lib=.libPaths()")
+  end
+end
 
 
 export CRTLearner,
@@ -47,11 +48,12 @@ mutable struct CRTLearner <: Learner
       :fitControl => fitControl,
       :impl_options => Dict()
     )
+    initlibs()
     new(nothing, nested_dict_merge(default_options, options)) 
   end
 end
 
-function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,Matrix}}
+function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,DataFrame,Matrix}}
     xx = x |> DataFrame
     yy = y |> Vector
     rres = rcall(:train,xx,yy,method=crt.options[:learner],trControl = reval(crt.options[:fitControl]))
@@ -59,7 +61,7 @@ function fit!(crt::CRTLearner,x::T,y::Vector) where  {T<:Union{Vector,Matrix}}
     crt.model = rres
 end
 
-function transform!(crt::CRTLearner,x::T) where  {T<:Union{Vector,Matrix}}
+function transform!(crt::CRTLearner,x::T) where  {T<:Union{Vector,Matrix,DataFrame}}
     xx = x |> DataFrame
     res = rcall(:predict,crt.model,xx)
     return rcopy(res)
@@ -72,7 +74,7 @@ function caretrun()
     y=iris[:,5] |> Vector
     fit!(crt,x,y)
     print(crt.model)
-    transform!(crt,x)
+    transform!(crt,x) |> collect
 end
 
 
