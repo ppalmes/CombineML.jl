@@ -7,6 +7,7 @@ The CombineML.jl package is licensed under the MIT "Expat" License:
 You may also be interested to [TSML (Time Series Machine Learning)](https://github.com/IBM/TSML.jl) package.
 
 # CombineML
+[![DOI](https://zenodo.org/badge/83453995.svg)](https://zenodo.org/badge/latestdoi/83453995)
 
 [![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
