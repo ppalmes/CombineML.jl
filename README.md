@@ -7,9 +7,7 @@ The CombineML.jl package is licensed under the MIT "Expat" License:
 You may also be interested to [TSML (Time Series Machine Learning)](https://github.com/IBM/TSML.jl) package.
 
 # CombineML
-[![DOI](https://zenodo.org/badge/83453995.svg)](https://zenodo.org/badge/latestdoi/83453995)
-
-[![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![DOI](https://zenodo.org/badge/83453995.svg)](https://zenodo.org/badge/latestdoi/83453995) | [![Join the chat at https://gitter.im/CombineML-jl/Lobby](https://badges.gitter.im/CombineML-jl/Lobby.svg)](https://gitter.im/CombineML-jl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Julia 1.0/Linux/OSX: [![Build Status](https://travis-ci.org/ppalmes/CombineML.jl.svg?branch=master)](https://travis-ci.org/ppalmes/CombineML.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ppalmes/CombineML.jl/badge.svg?branch=master)](https://coveralls.io/github/ppalmes/CombineML.jl?branch=master)
