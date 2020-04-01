@@ -171,6 +171,27 @@ mutable struct Pipeline <: Transformer
   end
 end
 
+"""
+    Pipeline(tr::Vector{<:Transformer},args::Dict=Dict())
+
+Helper function for Pipeline structure.
+"""
+function Pipeline(tr::Vector{<:Transformer},args::Dict=Dict())
+  Pipeline(Dict(:transformers => tr, args...))
+end
+
+"""
+    Pipeline(tr::Vararg{Transformer})
+
+Helper function for Pipeline structure.
+"""
+function Pipeline(tr::Vararg{Transformer})
+  v=[x for x in machs] # convert tuples to vector
+  combo = Pipeline(v)
+  return combo
+end
+
+
 function fit!(pipe::Pipeline, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
   xinstances=convert(Matrix,features)
   transformers = pipe.options[:transformers]
@@ -202,6 +223,67 @@ function transform!(pipe::Pipeline, features::T) where {T<:Union{Vector,Matrix,D
   end
 
   return current_instances
+end
+
+# ComboPipeline
+# concatenates outputs of transformers
+
+mutable struct ComboPipeline <: Transformer
+  model
+  options
+
+  function ComboPipeline(options=Dict())
+    default_options = Dict(
+      # Transformers as list to chain in sequence.
+      :transformers => [OneHotEncoder(), Imputer()],
+      # Transformer options as list applied to same index transformer.
+      :transformer_options => nothing
+    )
+    new(nothing, nested_dict_merge(default_options, options))
+  end
+end
+
+function ComboPipeline(tr::Vector{<:Transformer},args::Dict=Dict())
+  ComboPipeline(Dict(:transformers => tr, args...))
+end
+
+function ComboPipeline(tr::Vararg{Transformer})
+  v = [x for x in tr]
+  res = ComboPipeline(v)
+  return res
+end
+
+function fit!(pipe::ComboPipeline, features::T, labels::Vector) where {T<:Union{Vector,Matrix,DataFrame}}
+  instances=deepcopy(features)
+  transformers = pipe.options[:transformers]
+  transformer_options = pipe.options[:transformer_options]
+
+  new_instances = DataFrame()
+  new_transformers = Transformer[]
+  for t_index in eachindex(transformers)
+    transformer = create_transformer(transformers[t_index], transformer_options)
+    push!(new_transformers, transformer)
+    fit!(transformer, instances, labels)
+  end
+
+  pipe.model = Dict(
+      :transformers => new_transformers,
+      :transformer_options => transformer_options
+  )
+end
+
+function transform!(pipe::ComboPipeline, features::T) where {T<:Union{Vector,Matrix,DataFrame}}
+  instances = deepcopy(features)
+  transformers = pipe.model[:transformers]
+
+  new_instances = DataFrame()
+  for t_index in eachindex(transformers)
+    transformer = transformers[t_index]
+    current_instances = transform!(transformer, instances)
+    new_instances = hcat(new_instances,current_instances,makeunique=true)
+  end
+
+  return new_instances
 end
 
 
@@ -244,6 +326,34 @@ end
 function transform!(wrapper::Wrapper, xinstances::T) where {T<:Union{Vector,Matrix,DataFrame}}
   transformer = wrapper.model[:transformer]
   return transform!(transformer, xinstances)
+end
+
+function processexpr(args)
+  for ndx in eachindex(args)
+    if typeof(args[ndx]) == Expr
+      processexpr(args[ndx].args)
+    elseif args[ndx] == :(|>)
+      args[ndx] = :Pipeline
+    elseif args[ndx] == :+
+      args[ndx] = :ComboPipeline
+    elseif args[ndx] == :*
+      args[ndx] = :BestLearner
+    end
+  end
+  return args
+end
+
+macro pipeline(expr)
+  lexpr = :($(esc(expr)))
+  res = processexpr(lexpr.args)
+  lexpr.args = res
+  lexpr
+end
+
+macro pipelinex(expr)
+  lexpr = :($(esc(expr)))
+  res = processexpr(lexpr.args)
+  :($res[1])
 end
 
 end # module
